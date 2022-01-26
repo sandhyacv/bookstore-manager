@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
 
 def goodBye():
@@ -19,7 +20,10 @@ root.attributes("-alpha", 0.95)
 root.wm_protocol("WM_DELETE_WINDOW", goodBye)
 root.resizable(FALSE,FALSE)
 
-mainframe = Frame(root, bg="#FFFFFF")
+sty = ttk.Style()
+sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief="flat")
+
+mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0)
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
