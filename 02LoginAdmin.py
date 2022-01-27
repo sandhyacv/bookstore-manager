@@ -6,10 +6,13 @@ def goodBye():
     root.quit()
 
 def adminLogin(event):
-    homeAdmin()
+    if userEntry.get() == "admin":
+        if pswdEntry.get() == "123":
+            homeAdmin()
     return
 
 def homeAdmin():
+    messagebox.showinfo(message="Successfully Logged In", title="Bookstore Manager")
     return
 
 root = Tk()
