@@ -5,7 +5,7 @@ def goodBye():
     messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
     root.quit()
 
-def memberLogin(event):
+def memberLogin(event=None):
     if userEntry.get() == "neha":
         if pswdEntry.get() == "bird":
             homeMember()
@@ -50,7 +50,7 @@ pswdEntry.insert(0, " Enter Password")
 pswdEntry.grid(row=3, column=0, ipady=10, pady=10)
 
 Label(mainframe, text = " ", height=2, bg="#ffffff").grid(row=4, column=0)
-Button(mainframe, text = "Login", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = lambda: memberLogin("login")).grid(row=5, column=0, pady=10)
+Button(mainframe, text = "Login", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = memberLogin).grid(row=5, column=0, pady=10)
 Label(mainframe, text = "OR", font = ("Berlin Sans FB", 16), bg="#FFFFFF", fg="#2e5170").grid(row=6, column=0, pady=10)
 Button(mainframe, text = "Continue as Guest", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = homeGuest).grid(row=7, column=0, pady=10)
 root.bind("<Return>", memberLogin)
