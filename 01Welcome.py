@@ -1,6 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
 def goodBye():
     messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
@@ -11,7 +10,7 @@ def asAdmin():
 
 def asCustomer():
     return
-    
+
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
