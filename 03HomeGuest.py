@@ -37,7 +37,7 @@ root.rowconfigure(0, weight=1)
 
 titleImg = PhotoImage(file = r"BookstoreMS\titlestrip.png").subsample(2,2)
 titleLbl = Label(mainframe, image = titleImg, bg="#FFFFFF")
-logoutBut = Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", command = loggedOut)
+logoutBut = Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", cursor="hand2", command = loggedOut)
 
 searchVar = StringVar()
 searchCtg = ttk.Combobox(mainframe, textvariable = searchVar, font=("Berlin Sans FB", 16), width=12, foreground="#2e2e2e", background="#FFFFFF")
