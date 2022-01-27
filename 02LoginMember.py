@@ -1,21 +1,22 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
 def goodBye():
     messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
     root.quit()
 
-def getUsername():
-    return
-
-def getPassword():
+def memberLogin(event):
+    if userEntry.get() == "neha":
+        if pswdEntry.get() == "bird":
+            homeMember()
     return
 
 def homeMember():
+    messagebox.showinfo(message="Successfully Logged In", title="Bookstore Manager")
     return
 
 def homeGuest():
+    messagebox.showinfo(message="Logged in as Guest", title="Bookstore Manager")
     return
 
 root = Tk()
@@ -28,39 +29,30 @@ root.resizable(FALSE,FALSE)
 
 sty = ttk.Style()
 sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief="flat")
-
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 
 titleImg = PhotoImage(file = r"BookstoreMS\titlestrip.png").subsample(2,2)
-titleLbl = Label(mainframe, image = titleImg, bg="#FFFFFF")
+Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0)
 
-loginTxt = Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170")
+Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=1, column=0, pady=15)
 
 user = StringVar()
 userEntry = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=user, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
 userEntry.insert(0, " Enter Username")
+userEntry.grid(row=2, column=0, ipady=10, pady=10)
 
 pswd = StringVar()
 pswdEntry = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=pswd, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
 pswdEntry.insert(0, " Enter Password")
-
-space = Label(mainframe, text = " ", height=2, bg="#ffffff")
-loginBut = Button(mainframe, text = "Login", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = homeMember)
-orLabel = Label(mainframe, text = "OR", font = ("Berlin Sans FB", 16), bg="#FFFFFF", fg="#2e5170")
-asGuest = Button(mainframe, text = "Continue as Guest", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = homeGuest)
-
-titleLbl.grid(row=0, column=0)
-
-loginTxt.grid(row=1, column=0, pady=15)
-userEntry.grid(row=2, column=0, ipady=10, pady=10)
 pswdEntry.grid(row=3, column=0, ipady=10, pady=10)
 
-space.grid(row=4, column=0)
-loginBut.grid(row=5, column=0, pady=10)
-orLabel.grid(row=6, column=0, pady=10)
-asGuest.grid(row=7, column=0, pady=10)
+Label(mainframe, text = " ", height=2, bg="#ffffff").grid(row=4, column=0)
+Button(mainframe, text = "Login", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = lambda: memberLogin("login")).grid(row=5, column=0, pady=10)
+Label(mainframe, text = "OR", font = ("Berlin Sans FB", 16), bg="#FFFFFF", fg="#2e5170").grid(row=6, column=0, pady=10)
+Button(mainframe, text = "Continue as Guest", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = homeGuest).grid(row=7, column=0, pady=10)
+root.bind("<Return>", memberLogin)
 
 root.mainloop()
