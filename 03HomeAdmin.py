@@ -49,7 +49,7 @@ root.rowconfigure(0, weight=1)
 
 titleImg = PhotoImage(file = r"BookstoreMS\titlestrip.png").subsample(2,2)
 titleLbl = Label(mainframe, image = titleImg, bg="#FFFFFF")
-logoutBut = Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", command = loggedOut)
+logoutBut = Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", cursor="hand2", command = loggedOut)
 
 bookCheckedOutB = Button(mainframe, text = "Check Out", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookCheckedOut)
 bookProcuredB = Button(mainframe, text = "Book Procured", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookProcured)
