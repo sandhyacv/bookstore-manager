@@ -23,7 +23,9 @@ sty = ttk.Style()
 sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief="flat")
 
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
-mainframe.grid(column=0, row=0)
+mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+root.columnconfigure(0, weight=1)
+root.rowconfigure(0, weight=1)
 
 bgtitle = PhotoImage(file=r"BookstoreMS\welcometitle.png")
 Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
