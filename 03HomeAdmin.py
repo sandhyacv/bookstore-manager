@@ -13,10 +13,10 @@ def loggedOut():
     messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
     welcomePage()
 
-def bookSold():
+def bookCheckedOut():
     return
 
-def bookBought():
+def bookProcured():
     return
 
 def bookReserved():
@@ -51,9 +51,9 @@ titleImg = PhotoImage(file = r"BookstoreMS\titlestrip.png").subsample(2,2)
 titleLbl = Label(mainframe, image = titleImg, bg="#FFFFFF")
 logoutBut = Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", command = loggedOut)
 
-bookSoldBut = Button(mainframe, text = "Book Sold", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookSold)
-bookBoughtBut = Button(mainframe, text = "Book Bought", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookBought)
-bookReservedBut = Button(mainframe, text = "Reserve Book", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookReserved)
+bookCheckedOutB = Button(mainframe, text = "Check Out", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookCheckedOut)
+bookProcuredB = Button(mainframe, text = "Book Procured", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookProcured)
+bookReservedB = Button(mainframe, text = "Reserve Book", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = bookReserved)
 editMemberBut = Button(mainframe, text = "Edit Members", width=17, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = editMember)
 
 searchVar = StringVar()
@@ -73,9 +73,9 @@ clearBut = Button(mainframe, text = "Clear", width = 12, bg = "#41404A", fg = "#
 titleLbl.grid(row=0, column=0, columnspan=4, rowspan=2)
 logoutBut.grid(row=1, column=3)
 
-bookSoldBut.grid(row=2, column=0, pady=10)
-bookBoughtBut.grid(row=2, column=1, pady=10)
-bookReservedBut.grid(row=2, column=2, pady=10)
+bookCheckedOutB.grid(row=2, column=0, pady=10)
+bookProcuredB.grid(row=2, column=1, pady=10)
+bookReservedB.grid(row=2, column=2, pady=10)
 editMemberBut.grid(row=2, column=3, pady=10)
 
 searchCtg.grid(row=3, column=0, ipadx=4, ipady=3, pady=14)
