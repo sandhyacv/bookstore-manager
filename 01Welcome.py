@@ -11,7 +11,7 @@ def asAdmin():
 
 def asCustomer():
     return
-
+    
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
@@ -25,24 +25,15 @@ sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief="f
 
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0)
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
 
-framebg1 = PhotoImage(file=r"BookstoreMS\welcometitle.png")
-bglabel1 = Label(mainframe, image = framebg1, bg="#FFFFFF")
+bgtitle = PhotoImage(file=r"BookstoreMS\welcometitle.png")
+Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
 
-framebg2 = PhotoImage(file=r"BookstoreMS\welcomecloud.png")
-bglabel2 = Label(mainframe, image = framebg2, bg="#FFFFFF")
+bgimage = PhotoImage(file=r"BookstoreMS\welcomecloud.png")
+Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
-login = Label(mainframe, text = "Login As     ", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e")
-
-logAdmin = Button(mainframe, text = "Admin", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 10), bd=2, cursor="hand2", relief="groove", command = asAdmin)
-logCustomer = Button(mainframe, text = "Customer", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 10), bd=2, cursor="hand2", relief="groove", command = asCustomer)
-
-bglabel1.grid(row=0, column=0, columnspan=8)
-bglabel2.grid(row=0, column=8, rowspan=6)
-login.grid(row=1, column=0)
-logAdmin.grid(row=2, column=0)
-logCustomer.grid(row=3, column=0)
+Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
+Button(mainframe, text = "Admin", width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 10), bd=2, cursor="hand2", relief="groove", command = asAdmin).grid(row=2, column=0, pady = 5)
+Button(mainframe, text = "Customer", width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 10), bd=2, cursor="hand2", relief="groove", command = asCustomer).grid(row=3, column=0, pady = 5)
 
 root.mainloop()
