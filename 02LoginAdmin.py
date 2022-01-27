@@ -5,7 +5,7 @@ def goodBye():
     messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
     root.quit()
 
-def adminLogin(event):
+def adminLogin(event=None):
     if userEntry.get() == "admin":
         if pswdEntry.get() == "123":
             homeAdmin()
@@ -46,7 +46,7 @@ pswdEntry.insert(0, " Enter Password")
 pswdEntry.grid(row=6, column=0, ipady=10, pady=10)
 
 Label(mainframe, text = " ", height=2, bg="#ffffff").grid(row=7, column=0)
-Button(mainframe, text = "Login", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = lambda: adminLogin("login")).grid(row=8, column=0, pady=10)
+Button(mainframe, text = "Login", pady = 5, width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 14), bd=2, cursor="hand2", relief="groove", command = adminLogin).grid(row=8, column=0, pady=10)
 root.bind("<Return>", adminLogin)
 
 root.mainloop()
