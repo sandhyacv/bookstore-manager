@@ -14,7 +14,7 @@ def asCustomer():
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
-root.iconbitmap(r"C:\Users\Sandhya C V\Programs\BookstoreMS\images\bms.ico")
+root.iconbitmap(r"images\bms.ico")
 root.attributes("-alpha", 0.95)
 root.wm_protocol("WM_DELETE_WINDOW", goodBye)
 root.resizable(FALSE,FALSE)
@@ -25,10 +25,10 @@ sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief=FL
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0)
 
-bgtitle = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\BookstoreMS\images\welcometitle.png")
+bgtitle = PhotoImage(file=r"images\welcometitle.png")
 Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
 
-bgimage = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\BookstoreMS\images\welcomecloud.png")
+bgimage = PhotoImage(file=r"images\welcomecloud.png")
 Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
 Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
