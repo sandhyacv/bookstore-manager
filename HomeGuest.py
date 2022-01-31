@@ -6,11 +6,11 @@ def welcomePage():
     return
 
 def goodBye():
-    messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
+    messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     root.quit()
 
 def loggedOut():
-    messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
+    messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     welcomePage()
 
 def searchBox(evt):
@@ -22,20 +22,20 @@ def searchBox(evt):
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
-root.iconbitmap(r"BookstoreMS\bms.ico")
+root.iconbitmap(r"images\bms.ico")
 root.attributes("-alpha", 0.95)
 root.wm_protocol("WM_DELETE_WINDOW", goodBye)
 root.resizable(FALSE,FALSE)
 
 sty = ttk.Style()
-sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief="flat")
+sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief=FLAT)
 
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 
-titleImg = PhotoImage(file = r"BookstoreMS\titlestrip.png").subsample(2,2)
+titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
 titleLbl = Label(mainframe, image = titleImg, bg="#FFFFFF")
 logoutBut = Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", cursor="hand2", command = loggedOut)
 
@@ -51,7 +51,7 @@ search = StringVar()
 searchEntry = Entry(mainframe, width=50, font=("Berlin Sans FB", 16), textvariable=search, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
 searchEntry.insert(0, " Enter Search Query")
 
-clearBut = Button(mainframe, text = "Clear", width = 15, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief="groove", command = lambda: searchEntry.delete(0, END))
+clearBut = Button(mainframe, text = "Clear", width = 15, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = lambda: searchEntry.delete(0, END))
 
 titleLbl.grid(row=0, column=0, columnspan=2, rowspan=2)
 logoutBut.grid(row=1, column=1, sticky=(E), padx=45)
