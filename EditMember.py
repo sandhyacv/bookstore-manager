@@ -1,16 +1,15 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
 def welcomePage():
     return
 
 def goodBye():
-    messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
+    messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     root.quit()
 
 def loggedOut():
-    messagebox.showinfo(message="Thank You for Using BMS", title="Bookstore Manager")
+    messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     welcomePage()
 
 def addMember():
@@ -28,13 +27,13 @@ def delMember():
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
-root.iconbitmap(r"BookstoreMS\bms.ico")
+root.iconbitmap(r"images\bms.ico")
 root.attributes("-alpha", 0.95)
 root.wm_protocol("WM_DELETE_WINDOW", goodBye)
 root.resizable(FALSE,FALSE)
 
 sty1 = ttk.Style()
-sty1.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief="flat")
+sty1.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief=FLAT)
 
 sty2 = ttk.Style()
 sty2.configure("Bookstore.TNotebook", background="#FFFFFF", padding=10, tabmargins=2)
@@ -47,7 +46,7 @@ mainframe.grid(column=0, row=0)
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 
-titleImg = PhotoImage(file = r"BookstoreMS\titlestrip.png").subsample(2,2)
+titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
 titleLbl = Label(mainframe, image = titleImg, bg="#FFFFFF")
 logoutBut = Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut)
 
@@ -62,7 +61,6 @@ memberNBK.add(delMemberF, text='Remove Member', padding=70)
 addMemberID = StringVar()
 addMemberIDL = Label(addMemberF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
 addMemberIDE = Entry(addMemberF, textvariable=addMemberID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-
 addMemberFName = StringVar()
 addMemberFNameL = Label(addMemberF, text="First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
 addMemberFNameE = Entry(addMemberF, textvariable=addMemberFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
