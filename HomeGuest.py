@@ -1,6 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
 def welcomePage():
     return
