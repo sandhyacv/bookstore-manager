@@ -84,6 +84,6 @@ editMemberB.grid(row=2, column=4, pady=10)
 
 searchCtg.grid(row=3, column=0, ipadx=4, ipady=3, pady=14)
 searchEntry.grid(row=3, column=1, columnspan=4, ipadx=5, ipady=5, padx=10, pady=14)
-clearBut.grid(row=4, column=4, stick=(E), padx=28)
+clearBut.grid(row=4, column=4, sticky=(E), padx=28)
 
 root.mainloop()
