@@ -1,6 +1,9 @@
+from sqlite3 import Cursor
 from tkinter import *
 from tkinter import ttk, messagebox
+import mysql.connector as sqltor
 
+mycon = sqltor.connect(host = "localhost",user = "root", passwd = "Arpanbiswas@2004", database = "bookstore")
 def goodBye():
     messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     # root.quit() only removes the title strip image instead for some reason.
@@ -16,7 +19,7 @@ def welcomePage():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -26,9 +29,9 @@ def welcomePage():
     mainframe = ttk.Frame(root, style="Bookstore.TFrame")
     mainframe.grid(column=0, row=0)
 
-    bgtitle = PhotoImage(file=r"images\welcometitle.png")
+    bgtitle = PhotoImage(file=r"desktop/welcometitle.png")
     Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
-    bgimage = PhotoImage(file=r"images\welcomecloud.png")
+    bgimage = PhotoImage(file=r"desktop/welcomecloud.png")
     Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
     Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
@@ -54,7 +57,7 @@ def asAdmin():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -66,7 +69,7 @@ def asAdmin():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0)
     Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=2, column=0, pady=30)
 
@@ -103,7 +106,7 @@ def homeAdmin():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -115,7 +118,7 @@ def homeAdmin():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=5, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = FLAT, cursor="hand2", command = loggedOut).grid(row=1, column=4)
 
@@ -174,7 +177,7 @@ def bookProcured():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -191,7 +194,7 @@ def bookProcured():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=6, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=5)
 
@@ -295,7 +298,7 @@ def bookReserved():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -311,7 +314,7 @@ def bookReserved():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=4, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=3)
 
@@ -388,7 +391,7 @@ def CheckOut():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -404,7 +407,7 @@ def CheckOut():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=4, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=3)
 
@@ -490,11 +493,35 @@ def CheckOut():
 
 def editBook():
     def addBook():
+        mycursor =  mycon.cursor()
+        mycursor.execute(f"INSERT INTO books VALUES {addBookIDE.get()},{addBookNameE.get()},{addBookAuthE.get()},{addBookGenreE.get()},{addBookPubE.get()},{addBookYoPE.get()},{addBookPriceE.get()},{addBookNewE.get()},{addBookSecE.get()}")
+        mycon.commit()
         # clear all entries after adding
+        addBookAuthE.delete(0, END)
+        addBookGenreE.delete(0, END)
+        addBookNameE.delete(0, END)
+        addBookIDE.delete(0, END)
+        addBookNewE.delete(0, END)
+        addBookPriceE.delete(0, END)
+        addBookPubE.delete(0, END)
+        addBookSecE.delete(0, END)
+        addBookYoPE.delete(0, END)
         return
 
     def modBook():
+        mycursor = mycon.cursor()
+        mycursor.execute(f"UPDATE books SET name = '{modBookNameE.get()}', author = '{modBookAuthE.get()}', genre = '{modBookGenreE.get()}', publisher = '{modBookPubE.get()}', yop = '{modBookYoPE.get()}', price = {modBookPriceE.get()}, new = {modBookNewE.get()}, used = {modBookSecE.get()} WHERE bookID = {modBookIDE.get()}")
+        mycon.commit()
         # clear all entries after modifying
+        modBookAuthE.delete(0, END)
+        modBookGenreE.delete(0, END)
+        modBookIDE.delete(0, END)
+        modBookNameE.delete(0, END)
+        modBookNewE.delete(0, END)
+        modBookPriceE.delete(0, END)
+        modBookPubE.delete(0, END)
+        modBookSecE.delete(0, END)
+        modBookYoPE.delete(0, END)
         return
 
     global root
@@ -502,7 +529,7 @@ def editBook():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -518,7 +545,7 @@ def editBook():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=6, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=5)
 
@@ -567,6 +594,7 @@ def editBook():
     addBookPriceE.grid(row=10, column=1, padx=10, pady=10)
     Button(addBookF, text="Add", command=addBook, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=10, column=5, padx=20, pady=10)
     Button(addBookF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=6, sticky=(E), padx=15, pady=10)
+    addBook()
 
     modBookID = StringVar()
     Label(modBookF, text="Book ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
@@ -606,20 +634,45 @@ def editBook():
     modBookPriceE.grid(row=10, column=1, padx=10, pady=10)
     Button(modBookF, text="Modify", command=modBook, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=10, column=5, padx=20, pady=10)
     Button(modBookF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=6, sticky=(E), padx=15, pady=10)
-
+    modBook()
+    
     root.mainloop()
 
 def editMember():
     def addMember():
+        membername = addMemberFNameE.get() + " " + addMemberLNameE.get()
+        mycursor = mycon.cursor()
+        mycursor.execute(f"UPDATE TABLE customers SET member = 'y' WHERE name LIKE '{membername}' AND contact LIKE '{addMemberContactE.get()}'" )
+        mycon.commit()
+        mycursor.execute(f"SELECT custid FROM CUSTOMERS WHERE name Like'{membername} AND contact LIKE'{addMemberContactE.get()}'")
+        customerid  = mycursor.fetchone()
+        memberid = customerid[0]
         # clear all entries after adding
-        return
+        addMemberFNameE.delete(0, END)
+        addMemberLNameE.delete(0, END)
+        addMemberContactE.delete(0, END)
+        return memberid
 
     def modMember():
+        membername =  modMemberFNameE.get() + " " + modMemberLNameE.get()
+        mycursor=mycon.cursor()
+        mycursor.execute(f"UPDATE customers SET name = {membername} WHERE custid = {modMemberIDE.get()}")
+        mycon.commit()
+        mycursor.execute(f"UPDATE customers SET contact = {modMemberContactE.get()} WHERE custid = {modMemberIDE.get()}")
+        mycon.commit()
         # clear all entries after modifying
+        modMemberContactE.delete(0, END)
+        modMemberFNameE.delete(0, END)
+        modMemberLNameE.delete(0, END)
+        modMemberIDE.delete(0, END)
         return
 
     def delMember():
+        mycursor = mycon.cursor()
+        mycursor.execute(f"DELETE FROM customers WHERE custid = {delMemberIDE.get()}")
+        mycon.commit()
         # clear all entries after removing
+        delMemberIDE.delete(0, END)
         return
 
     global root
@@ -627,7 +680,7 @@ def editMember():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -643,7 +696,7 @@ def editMember():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=4, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=3)
 
@@ -656,10 +709,6 @@ def editMember():
     memberNBK.add(delMemberF, text='Remove Member', padding=47)
     memberNBK.grid(row=2, column=0, columnspan=4, sticky=(W))
 
-    addMemberID = StringVar()
-    Label(addMemberF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
-    addMemberIDE = Entry(addMemberF, textvariable=addMemberID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addMemberIDE.grid(row=3, column=1, padx=10, pady=10)    
     addMemberFName = StringVar()
     Label(addMemberF, text="First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
     addMemberFNameE = Entry(addMemberF, textvariable=addMemberFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
@@ -674,6 +723,8 @@ def editMember():
     addMemberContactE.grid(row=6, column=1, padx=10, pady=10)
     Button(addMemberF, text="Add", command=addMember, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=7, column=2, padx=20, pady=20)
     Button(addMemberF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=8, column=2, sticky=(E), padx=15, pady=10)
+    displayMemberID = addMember()
+    Label(addMemberF, text=displayMemberID, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
 
     modMemberID = StringVar()
     Label(modMemberF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
@@ -693,6 +744,7 @@ def editMember():
     modMemberContactE.grid(row=6, column=1, padx=10, pady=10)
     Button(modMemberF, text="Modify", command=modMember, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=7, column=2, padx=20, pady=20)
     Button(modMemberF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=8, column=2, sticky=(E), padx=15, pady=10)
+    modMember()
 
     delMemberID = StringVar()
     Label(delMemberF, text="             Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, padx=10, pady=10)
@@ -700,6 +752,7 @@ def editMember():
     delMemberIDE.grid(row=3, column=1, padx=10, pady=10)
     Button(delMemberF, text="Remove", command=delMember, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=4, column=2, padx=20, pady=20)
     Button(delMemberF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=5, column=2, sticky=(E), padx=15, pady=10)
+    delMember()
 
     root.mainloop()
 
@@ -710,7 +763,7 @@ def asCustomer():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -722,7 +775,7 @@ def asCustomer():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=2)
 
     Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=1, column=0, pady=15, columnspan=2)
@@ -764,7 +817,7 @@ def homeMember():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -776,7 +829,7 @@ def homeMember():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=2, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=1, sticky=(E), padx=45)
 
@@ -811,7 +864,7 @@ def homeGuest():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -823,7 +876,7 @@ def homeGuest():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=2, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=1, sticky=(E), padx=45)
 
@@ -852,7 +905,7 @@ def homeGuest():
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
-root.iconbitmap(r"images\bms.ico")
+root.iconbitmap(r"desktop/bms.ico")
 root.attributes("-alpha", 0.95)
 root.wm_protocol("WM_DELETE_WINDOW", goodBye)
 root.resizable(FALSE,FALSE)
@@ -862,9 +915,9 @@ sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief=FL
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0)
 
-bgtitle = PhotoImage(file=r"images\welcometitle.png")
+bgtitle = PhotoImage(file=r"desktop/welcometitle.png")
 Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
-bgimage = PhotoImage(file=r"images\welcomecloud.png")
+bgimage = PhotoImage(file=r"desktop/welcomecloud.png")
 Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
 Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
