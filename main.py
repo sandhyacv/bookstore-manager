@@ -28,7 +28,7 @@ def welcomePage():
     mainframe = ttk.Frame(root, style="Bookstore.TFrame")
     mainframe.grid(column=0, row=0)
 
-    bgtitle = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\titlestrip.png")
+    bgtitle = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\welcometitle.png")
     Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
     bgimage = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\welcomecloud.png")
     Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
