@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `bookstore`.`customers` (
   `custid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `contact` CHAR(10) NOT NULL,
-  `member` CHAR(1) NOT NULL,
+  `member` CHAR(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`custid`))
 ENGINE = InnoDB;
 
