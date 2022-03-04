@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 import mysql.connector as sqltor
 
-mycon = sqltor.connect(host = "localhost",user = "root", passwd = "Arpanbiswas@2004", database = "bookstore")
+mycon = sqltor.connect(host = "localhost",user = "root", passwd = "ladybug04", database = "bookstore")
 def goodBye():
     messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     # root.quit() only removes the title strip image instead for some reason.
@@ -18,7 +18,7 @@ def welcomePage():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -28,9 +28,9 @@ def welcomePage():
     mainframe = ttk.Frame(root, style="Bookstore.TFrame")
     mainframe.grid(column=0, row=0)
 
-    bgtitle = PhotoImage(file=r"/Users/arpanbiswas/Desktop/titlestrip.png")
+    bgtitle = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\titlestrip.png")
     Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
-    bgimage = PhotoImage(file=r"/Users/arpanbiswas/Desktop/welcomecloud.png")
+    bgimage = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\welcomecloud.png")
     Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
     Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
@@ -56,7 +56,7 @@ def asAdmin():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -105,7 +105,7 @@ def homeAdmin():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -160,9 +160,9 @@ def bookProcured():
         Label(addTransF, text="total: ", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1)
         Label(addTransF, text=str(Atotal), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=2)
         mycursor = mycon.cursor()
-        mycursor.execute(f"INSERT INTO fromven VALUES {int(addTransIDE.get())},{int(addSuppIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{Atotal}")
+        mycursor.execute(f"INSERT INTO fromven VALUES ({int(addTransIDE.get())},{int(addSuppIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{Atotal})")
         mycon.commit()
-        mycursor.execute(f"INSERT INTO vendors VALUES {int(addSuppIDE.get())},{addSuppNameE.get()},{addContactE.get()} ON DUPLICATE KEY UPDATE")
+        mycursor.execute(f"INSERT INTO vendors VALUES ({int(addSuppIDE.get())},{addSuppNameE.get()},{addContactE.get()}) ON DUPLICATE KEY UPDATE")
         mycon.commit()
         # clear all entries after adding
         addBookPriceE.delete(0, END)
@@ -204,7 +204,7 @@ def bookProcured():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -310,7 +310,7 @@ def bookProcured():
 def bookReserved():
     def addRes():
         mycursor = mycon.cursor()
-        mycursor.execute(f"INSERT INTO reserved VALUES {int(addResIDE.get())},{int(addCustIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{addDateE.get()},{addFulfilledE.get()}")
+        mycursor.execute(f"INSERT INTO reserved VALUES ({int(addResIDE.get())},{int(addCustIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{addDateE.get()},{addFulfilledE.get()})")
         mycon.commit()
         # clear all entries after adding
         addBookIDE.delete(0, END)
@@ -341,7 +341,7 @@ def bookReserved():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -437,7 +437,7 @@ def bookReserved():
 def CheckOut():
     def addTransOldCustomer():
         mycursor  =  mycon.cursor()
-        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES {int(addCustIDE.get())}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {total},{discount}")
+        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES ({int(addCustIDE.get())}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {total},{discount})")
         mycon.commit()
 
         if addNorUE.get() == "n":
@@ -457,7 +457,7 @@ def CheckOut():
 
     def addTransNewCustomer():
         mycursor  =  mycon.cursor()
-        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES {int(addCustIDE.get())}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {total}, 0")
+        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES ({int(addCustIDE.get())}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {total}, 0)")
         mycon.commit()
 
         if addNorUE.get() == "n":
@@ -467,7 +467,7 @@ def CheckOut():
         mycon.commit()
 
         name  =  addCustFnameE.get() + " " + addCustLNameE.get()
-        mycursor.execute(f"INSERT INTO customers(name, contact) VALUES {name}, {addContactE.get()}")
+        mycursor.execute(f"INSERT INTO customers(name, contact) VALUES ({name}, {addContactE.get()})")
         # clear all entries after adding
         addBookIDE.delete(0, END)
         addContactE.delete(0, END)
@@ -482,7 +482,7 @@ def CheckOut():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -597,7 +597,7 @@ def CheckOut():
 def editBook():
     def addBook():
         mycursor =  mycon.cursor()
-        mycursor.execute(f"INSERT INTO books VALUES {int(addBookIDE.get())},{addBookNameE.get()},{addBookAuthE.get()},{addBookGenreE.get()},{addBookPubE.get()},{addBookYoPE.get()},{float(addBookPriceE.get())},{int(addBookNewE.get())},{int(addBookSecE.get())}")
+        mycursor.execute(f"INSERT INTO books VALUES ({int(addBookIDE.get())},{addBookNameE.get()},{addBookAuthE.get()},{addBookGenreE.get()},{addBookPubE.get()},{addBookYoPE.get()},{float(addBookPriceE.get())},{int(addBookNewE.get())},{int(addBookSecE.get())})")
         mycon.commit()
         # clear all entries after adding
         addBookAuthE.delete(0, END)
@@ -632,7 +632,7 @@ def editBook():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -780,7 +780,7 @@ def editMember():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -860,7 +860,7 @@ def asCustomer():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -914,7 +914,7 @@ def homeMember():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -961,7 +961,7 @@ def homeGuest():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+    root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -1002,7 +1002,7 @@ def homeGuest():
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
-root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
+root.iconbitmap(r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\bms.ico")
 root.attributes("-alpha", 0.95)
 root.wm_protocol("WM_DELETE_WINDOW", goodBye)
 root.resizable(FALSE,FALSE)
@@ -1012,9 +1012,9 @@ sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief=FL
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0)
 
-bgtitle = PhotoImage(file=r"/Users/arpanbiswas/Desktop/titlestrip.png")
+bgtitle = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\titlestrip.png")
 Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
-bgimage = PhotoImage(file=r"/Users/arpanbiswas/Desktop/welcomecloud.png")
+bgimage = PhotoImage(file=r"C:\Users\Sandhya C V\Programs\bookstore-manager\images\welcomecloud.png")
 Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
 Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
