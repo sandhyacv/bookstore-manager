@@ -625,7 +625,7 @@ def bookReserved():
     # reservation id is auto-incremented.
     Label(addResF, text="Reservation ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
     mycursor = mycon.cursor()
-    mycursor.execute("SELECT resid FROM reserved ORDER BY redid DESC LIMIT 1")
+    mycursor.execute("SELECT resid FROM reserved ORDER BY resid DESC LIMIT 1")
     resid = mycursor.fetchone()
     reservationid = resid[0]+1
     Label(addResF, text=reservationid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(E), padx=10, pady=10)
