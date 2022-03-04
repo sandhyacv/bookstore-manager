@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk, messagebox
+import mysql.connector as sqltor
 
+mycon = sqltor.connect(host = "localhost",user = "root", passwd = "Arpanbiswas@2004", database = "bookstore")
 def goodBye():
     messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     # root.quit() only removes the title strip image instead for some reason.
@@ -16,7 +18,7 @@ def welcomePage():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -26,9 +28,9 @@ def welcomePage():
     mainframe = ttk.Frame(root, style="Bookstore.TFrame")
     mainframe.grid(column=0, row=0)
 
-    bgtitle = PhotoImage(file=r"images\welcometitle.png")
+    bgtitle = PhotoImage(file=r"/Users/arpanbiswas/Desktop/titlestrip.png")
     Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
-    bgimage = PhotoImage(file=r"images\welcomecloud.png")
+    bgimage = PhotoImage(file=r"/Users/arpanbiswas/Desktop/welcomecloud.png")
     Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
     Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
@@ -54,7 +56,7 @@ def asAdmin():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -66,7 +68,7 @@ def asAdmin():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0)
     Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=2, column=0, pady=30)
 
@@ -103,7 +105,7 @@ def homeAdmin():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -115,7 +117,7 @@ def homeAdmin():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=5, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = FLAT, cursor="hand2", command = loggedOut).grid(row=1, column=4)
 
@@ -154,19 +156,47 @@ def searchBox(evt):
 
 def bookProcured():
     def addTrans():
-        addTotal = Label(addTransF, text="tot", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-        addTotal.grid(row=9, column=1)
+        Atotal = float(addBookPriceE.get())*int(addCopiesE.get())
+        Label(addTransF, text="total: ", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1)
+        Label(addTransF, text=str(Atotal), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=2)
+        mycursor = mycon.cursor()
+        mycursor.execute(f"INSERT INTO fromven VALUES {int(addTransIDE.get())},{int(addSuppIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{Atotal}")
+        mycon.commit()
+        mycursor.execute(f"INSERT INTO vendors VALUES {int(addSuppIDE.get())},{addSuppNameE.get()},{addContactE.get()} ON DUPLICATE KEY UPDATE")
+        mycon.commit()
         # clear all entries after adding
+        addBookPriceE.delete(0, END)
+        addBookIDE.delete(0, END)
+        addContactE.delete(0, END)
+        addSuppNameE.delete(0, END)
+        addCopiesE.delete(0, END)
+        addSuppIDE.delete(0, END)
+        addTransIDE.delete(0, END)
         return
 
     def modTrans():
+        Mtotal = int(modBookPriceE.get())*int(modCopiesE.get())
         modTotal = Label(modTransF, text="tot", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
         modTotal.grid(row=9, column=1)
-        # clear all entries after modifying
+        mycursor = mycon.cursor()
+        mycursor.execute(f"UPDATE fromven SET vendid = {int(modSuppIDE.get())}, bookid = {int(modBookIDE.get())}, copies = {int(modCopiesE.get())}, cost = {Mtotal} WHERE transid = {int(modTransIDE.get())}")
+        mycon.commit()
+        # clear all entries after adding
+        modBookPriceE.delete(0, END)
+        modBookIDE.delete(0, END)
+        modContactE.delete(0, END)
+        modSuppNameE.delete(0, END)
+        modCopiesE.delete(0, END)
+        modSuppIDE.delete(0, END)
+        modTransIDE.delete(0, END)
         return
 
     def delTrans():
+        mycursor = mycon.cursor()
+        mycursor.execute(f"DELETE FROM fromven WHERE transid = {int(delTransIDE.get())}")
+        mycon.commit()
         # clear all entries after removing
+        delTransIDE.delete(0, END)
         return
 
     global root
@@ -174,7 +204,7 @@ def bookProcured():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -191,7 +221,7 @@ def bookProcured():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=6, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=5)
 
@@ -279,15 +309,31 @@ def bookProcured():
 
 def bookReserved():
     def addRes():
+        mycursor = mycon.cursor()
+        mycursor.execute(f"INSERT INTO reserved VALUES {int(addResIDE.get())},{int(addCustIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{addDateE.get()},{addFulfilledE.get()}")
+        mycon.commit()
         # clear all entries after adding
+        addBookIDE.delete(0, END)
+        addCustIDE.delete(0, END)
+        addResIDE.delete(0, END)
         return
 
     def modRes():
+        mycursor  = mycon.cursor()
+        mycursor.execute(f"UPDATE reserved SET custid = {int(modCustIDE.get())}, bookid = {int(modBookIDE.get())}, {int(modCopiesE.get())},{modDateE.get()},{modFulfilledE.get()} WHERE resid = {int(modResIDE.get())}")
+        mycon.commit()
         # clear all entries after modifying
+        modResIDE.delete(0, END)
+        modCustIDE.delete(0, END)
+        modBookIDE.delete(0, END)
         return
 
     def delRes():
+        mycursor =  mycon.cursor()
+        mycursor.execute(f"DELETE FROM reserved WHERE resid = {int(delResIDE.get())}")
+        mycon.commit()
         # clear all entries after removing
+        delResIDE.delete(0, END)
         return
 
     global root
@@ -295,7 +341,7 @@ def bookReserved():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -311,7 +357,7 @@ def bookReserved():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=4, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=3)
 
@@ -336,10 +382,21 @@ def bookReserved():
     Label(addResF, text="Book IDs:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
     addBookIDE = Entry(addResF, textvariable=addBookID, width=40, font = ("Berlin Sans FB", 12), bd=2)
     addBookIDE.grid(row=5, column=1, padx=10, pady=10)
+    addCopies = StringVar()
+    Label(addResF, text="Copies:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+    addCopiesE = Entry(addResF, textvariable=addCopies, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    addCopiesE.grid(row=6, column=1, padx=10, pady=10)
+    addDate = StringVar()
+    Label(addResF, text="Date:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+    addDateE = Entry(addResF, textvariable=addDate, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    addDateE.grid(row=7, column=1, padx=10, pady=10)
+    addFulfilled = StringVar()
+    Label(addResF, text="Fulfilled(y/n):", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+    addFulfilledE = Entry(addResF, textvariable=addFulfilled, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    addFulfilledE.grid(row=8, column=1, padx=10, pady=10)
     Button(addResF, text="Add", command=addRes, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=6, column=2, padx=20, pady=40)
     # fix button cmd. to homeMember/homeAdmin.
     Button(addResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=6, column=3, sticky=(E), padx=5, pady=10)
-
 
     modResID = StringVar()
     Label(modResF, text="Reservation ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
@@ -353,10 +410,21 @@ def bookReserved():
     Label(modResF, text="Book IDs:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
     modBookIDE = Entry(modResF, textvariable=modBookID, width=40, font = ("Berlin Sans FB", 12), bd=2)
     modBookIDE.grid(row=5, column=1, padx=10, pady=10)
+    modCopies = StringVar()
+    Label(addResF, text="Copies:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+    modCopiesE = Entry(modResF, textvariable=modCopies, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    modCopiesE.grid(row=6, column=1, padx=10, pady=10)
+    modDate = StringVar()
+    Label(modResF, text="Date:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+    modDateE = Entry(addResF, textvariable=modDate, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    modDateE.grid(row=7, column=1, padx=10, pady=10)
+    modFulfilled = StringVar()
+    Label(modResF, text="Fulfilled(y/n):", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+    modFulfilledE = Entry(addResF, textvariable=modFulfilled, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    modFulfilledE.grid(row=8, column=1, padx=10, pady=10)
     Button(modResF, text="Modify", command=modRes, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=6, column=2, padx=20, pady=40)
     Button(modResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=6, column=3, sticky=(E), padx=5, pady=10)
-
-
+    
     delResID = StringVar()
     Label(delResF, text="Reservation ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, padx=10, pady=10)
     delResIDE = Entry(delResF, textvariable=delResID, width=40, font = ("Berlin Sans FB", 12), bd=2)
@@ -367,20 +435,46 @@ def bookReserved():
     root.mainloop()
 
 def CheckOut():
-    def addTrans():
-        addTotal = Label(addTransF, text="tot", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-        addTotal.grid(row=9, column=1)
+    def addTransOldCustomer():
+        mycursor  =  mycon.cursor()
+        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES {int(addCustIDE.get())}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {total},{discount}")
+        mycon.commit()
+
+        if addNorUE.get() == "n":
+            mycursor.execute(f"UPDATE books SET new = new - {int(addCopiesE.get())} WHERE bookid = {int(addBookIDE.get())}")
+        elif addNorUE.get() == "u":
+            mycursor.execute(f"UPDATE books SET used = used - {int(addCopiesE.get())} WHERE bookid = {int(addBookIDE.get())}")
+        mycon.commit()
+
         # clear all entries after adding
+        addBookIDE.delete(0, END)
+        addContactE.delete(0, END)
+        addCopiesE.delete(0, END)
+        addCustFnameE.delete(0, END)
+        addCustLNameE.delete(0, END)
+        addNorUE.delete(0, END)
         return
 
-    def modTrans():
-        modTotal = Label(modTransF, text="tot", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-        modTotal.grid(row=9, column=1)
-        # clear all entries after modifying
-        return
+    def addTransNewCustomer():
+        mycursor  =  mycon.cursor()
+        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES {int(addCustIDE.get())}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {total}, 0")
+        mycon.commit()
 
-    def delTrans():
-        # clear all entries after removing
+        if addNorUE.get() == "n":
+            mycursor.execute(f"UPDATE books SET new = new - {int(addCopiesE.get())} WHERE bookid = {int(addBookIDE.get())}")
+        elif addNorUE.get() == "u":
+            mycursor.execute(f"UPDATE books SET used = used - {int(addCopiesE.get())} WHERE bookid = {int(addBookIDE.get())}")
+        mycon.commit()
+
+        name  =  addCustFnameE.get() + " " + addCustLNameE.get()
+        mycursor.execute(f"INSERT INTO customers(name, contact) VALUES {name}, {addContactE.get()}")
+        # clear all entries after adding
+        addBookIDE.delete(0, END)
+        addContactE.delete(0, END)
+        addCopiesE.delete(0, END)
+        addCustFnameE.delete(0, END)
+        addCustLNameE.delete(0, END)
+        addNorUE.delete(0, END)
         return
 
     global root
@@ -388,7 +482,7 @@ def CheckOut():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -404,7 +498,7 @@ def CheckOut():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=4, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=3)
 
@@ -417,84 +511,120 @@ def CheckOut():
     checkOutNBK.add(delTransF, text='Remove Check Out')
     checkOutNBK.grid(row=2, column=0, columnspan=4, sticky=(W))
 
-    addTransID = StringVar()
-    Label(addTransF, text="Transaction ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
-    addTransIDE = Entry(addTransF, textvariable=addTransID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addTransIDE.grid(row=3, column=1, padx=10, pady=10)
     addCustID = StringVar()
     Label(addTransF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
     addCustIDE = Entry(addTransF, textvariable=addCustID, width=40, font = ("Berlin Sans FB", 12), bd=2)
     addCustIDE.grid(row=4, column=1, padx=10, pady=10)
-    addCustFName = StringVar()
-    Label(addTransF, text="Customer First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
-    addCustFnameE = Entry(addTransF, textvariable=addCustFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addCustFnameE.grid(row=5, column=1, padx=10, pady=10)
-    addCustLName = StringVar()
-    Label(addTransF, text="Customer Last Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=6, column=0, sticky=(E), padx=10, pady=10)
-    addCustLNameE = Entry(addTransF, textvariable=addCustLName, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addCustLNameE.grid(row=6, column=1, padx=10, pady=10)
-    addContact = StringVar()
-    Label(addTransF, text="        Phone Number:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=7, column=0, sticky=(E), padx=10, pady=10)
-    addContactE = Entry(addTransF, textvariable=addContact, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addContactE.grid(row=7, column=1, padx=10, pady=10)
-    addBookID = StringVar()
-    Label(addTransF, text="Book IDs:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=8, column=0, sticky=(E), padx=10, pady=10)
-    addBookIDE = Entry(addTransF, textvariable=addBookID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addBookIDE.grid(row=8, column=1, padx=10, pady=10)
-    Label(addTransF, text="Total Cost:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=0, sticky=(E), padx=10, pady=10)
-    Button(addTransF, text="Add", command=addTrans, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=10, column=2, padx=20, pady=40)
-    Button(addTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=3, sticky=(E), padx=15, pady=10)
+    newcursor =  mycon.cursor()
+    newcursor.execute(f"SELECT custid FROM customers WHERE custid  = {int(addCustIDE.get())}")
+    idlist = newcursor.fetchone()
 
-    modTransID = StringVar()
-    modTransIDL = Label(modTransF, text="Transaction ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-    modTransIDE = Entry(modTransF, textvariable=modTransID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    modTransIDL.grid(row=3, column=0, sticky=(E), padx=10, pady=10)
-    modTransIDE.grid(row=3, column=1, padx=10, pady=10)
-    modCustID = StringVar()
-    modCustIDL = Label(modTransF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-    modCustIDE = Entry(modTransF, textvariable=modCustID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    modCustIDL.grid(row=4, column=0, sticky=(E), padx=10, pady=10)
-    modCustIDE.grid(row=4, column=1, padx=10, pady=10)
-    modCustFName = StringVar()
-    modCustFNameL = Label(modTransF, text="Customer First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-    modCustFnameE = Entry(modTransF, textvariable=modCustFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    modCustFNameL.grid(row=5, column=0, sticky=(E), padx=10, pady=10)
-    modCustFnameE.grid(row=5, column=1, padx=10, pady=10)
-    modCustLName = StringVar()
-    modCustLNameL = Label(modTransF, text="Customer Last Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-    modCustLNameE = Entry(modTransF, textvariable=modCustLName, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    modCustLNameL.grid(row=6, column=0, sticky=(E), padx=10, pady=10)
-    modCustLNameE.grid(row=6, column=1, padx=10, pady=10)
-    modContact = StringVar()
-    modContactL = Label(modTransF, text="        Phone Number:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-    modContactE = Entry(modTransF, textvariable=modContact, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    modContactL.grid(row=7, column=0, sticky=(E), padx=10, pady=10)
-    modContactE.grid(row=7, column=1, padx=10, pady=10)
-    modBookID = StringVar()
-    modBookIDL = Label(modTransF, text="Book IDs:", bg="#FFFFFF", font = ("Berlin Sans FB", 12))
-    modBookIDE = Entry(modTransF, textvariable=modBookID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    modBookIDL.grid(row=8, column=0, sticky=(E), padx=10, pady=10)
-    modBookIDE.grid(row=8, column=1, padx=10, pady=10) 
-    Label(modTransF, text="Total Cost:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=0, sticky=(E), padx=10, pady=10)
-    Button(modTransF, text="Modify", command=modTrans, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=10, column=2, padx=20, pady=40)
-    Button(modTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=3, sticky=(E), padx=15, pady=10)
+    if idlist is not None:
+        addBookID = StringVar()
+        Label(addTransF, text="Book IDs:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+        addBookIDE = Entry(addTransF, textvariable=addBookID, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addBookIDE.grid(row=5, column=1, padx=10, pady=10)
+        addCopies = StringVar()
+        Label(addTransF, text="Copies:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=6, column=0, sticky=(E), padx=10, pady=10)
+        addCopiesE = Entry(addTransF, textvariable=addCopies, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addCopiesE.grid(row=6, column=1, padx=10, pady=10)
+        addNorU = StringVar()
+        Label(addTransF, text="New or Used (n/u): ", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=7, column=0, sticky=(E), padx=10, pady=10)
+        addNorUE = Entry(addTransF, textvariable=addNorU, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addNorUE.grid(row=7, column=1, padx=10, pady=10)
+        newcursor.execute(f"SELECT price FROM books WHERE bookid = {int(addBookIDE.get())}")
+        price  = newcursor.fetchone()
+        pricebook = price[0]
+        newcursor.execute(f"SELECT member FROM customers WHERE custid = {int(addCustIDE.get())}")
+        memberstatus = newcursor.fetchone()
+        memberstatusstr = memberstatus[0]
 
-    delTransID = StringVar()
-    Label(delTransF, text="             Transaction ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, padx=10, pady=10)
-    delTransIDE = Entry(delTransF, textvariable=delTransID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    delTransIDE.grid(row=3, column=1, padx=10, pady=10)
-    Button(delTransF, text="Remove", command=delTrans, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=4, column=2, padx=20, pady=40)
-    Button(delTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=4, column=3, sticky=(E), padx=15, pady=10)
+        if memberstatusstr == "y":
+            discount = 10
+            totalnodiscount  = pricebook * int(addCopies.get())
+            total = totalnodiscount - (discount/100)*totalnodiscount
+        else:
+            discount = 0
+            total = pricebook * int(addCopiesE.get())
+        
+        Label(addTransF, text="Book Price:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=8, column=0, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text=str(pricebook), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=8, column=1, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text="Discount:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=0, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text=str(discount), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text="Total:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=10, column=0, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text=str(total), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=10, column=1, sticky=(E), padx=10, pady=10)
+        Button(addTransF, text="Add", command=addTransOldCustomer, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=11, column=2, padx=20, pady=40)
+        Button(addTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=11, column=3, sticky=(E), padx=15, pady=10)
+    
+    else:
+        addCustFName = StringVar()
+        Label(addTransF, text="Customer First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
+        addCustFnameE = Entry(addTransF, textvariable=addCustFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addCustFnameE.grid(row=5, column=1, padx=10, pady=10)
+        addCustLName = StringVar()
+        Label(addTransF, text="Customer Last Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=6, column=0, sticky=(E), padx=10, pady=10)
+        addCustLNameE = Entry(addTransF, textvariable=addCustLName, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addCustLNameE.grid(row=6, column=1, padx=10, pady=10)
+        addContact = StringVar()
+        Label(addTransF, text="        Phone Number:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=7, column=0, sticky=(E), padx=10, pady=10)
+        addContactE = Entry(addTransF, textvariable=addContact, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addContactE.grid(row=7, column=1, padx=10, pady=10)
+        addBookID = StringVar()
+        Label(addTransF, text="Book IDs:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=8, column=0, sticky=(E), padx=10, pady=10)
+        addBookIDE = Entry(addTransF, textvariable=addBookID, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addBookIDE.grid(row=8, column=1, padx=10, pady=10)
+        addCopies = StringVar()
+        Label(addTransF, text="Copies:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=0, sticky=(E), padx=10, pady=10)
+        addCopiesE = Entry(addTransF, textvariable=addCopies, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addCopiesE.grid(row=9, column=1, padx=10, pady=10)
+        addNorU = StringVar()
+        Label(addTransF, text="New or Used (n/u): ", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=10, column=0, sticky=(E), padx=10, pady=10)
+        addNorUE = Entry(addTransF, textvariable=addNorU, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addNorUE.grid(row=10, column=1, padx=10, pady=10)
+        newcursor.execute(f"SELECT price FROM books WHERE bookid = {int(addBookIDE.get())}")
+        price  = newcursor.fetchone()
+        pricebook = price[0]
+        total  = pricebook * int(addCopies.get())
+        Label(addTransF, text="Book Price:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=11, column=0, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text=str(pricebook), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=11, column=1, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text="Total:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=12, column=0, sticky=(E), padx=10, pady=10)
+        Label(addTransF, text=str(total), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=12, column=1, sticky=(E), padx=10, pady=10)
+        Button(addTransF, text="Add", command=addTransNewCustomer, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=13, column=2, padx=20, pady=40)
+        Button(addTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=13, column=3, sticky=(E), padx=15, pady=10)
 
     root.mainloop()
 
 def editBook():
     def addBook():
+        mycursor =  mycon.cursor()
+        mycursor.execute(f"INSERT INTO books VALUES {int(addBookIDE.get())},{addBookNameE.get()},{addBookAuthE.get()},{addBookGenreE.get()},{addBookPubE.get()},{addBookYoPE.get()},{float(addBookPriceE.get())},{int(addBookNewE.get())},{int(addBookSecE.get())}")
+        mycon.commit()
         # clear all entries after adding
+        addBookAuthE.delete(0, END)
+        addBookGenreE.delete(0, END)
+        addBookNameE.delete(0, END)
+        addBookIDE.delete(0, END)
+        addBookNewE.delete(0, END)
+        addBookPriceE.delete(0, END)
+        addBookPubE.delete(0, END)
+        addBookSecE.delete(0, END)
+        addBookYoPE.delete(0, END)
         return
 
     def modBook():
+        mycursor = mycon.cursor()
+        mycursor.execute(f"UPDATE books SET name = '{modBookNameE.get()}', author = '{modBookAuthE.get()}', genre = '{modBookGenreE.get()}', publisher = '{modBookPubE.get()}', yop = '{modBookYoPE.get()}', price = {float(modBookPriceE.get())}, new = {int(modBookNewE.get())}, used = {int(modBookSecE.get())} WHERE bookID = {int(modBookIDE.get())}")
+        mycon.commit()
         # clear all entries after modifying
+        modBookAuthE.delete(0, END)
+        modBookGenreE.delete(0, END)
+        modBookIDE.delete(0, END)
+        modBookNameE.delete(0, END)
+        modBookNewE.delete(0, END)
+        modBookPriceE.delete(0, END)
+        modBookPubE.delete(0, END)
+        modBookSecE.delete(0, END)
+        modBookYoPE.delete(0, END)
         return
 
     global root
@@ -502,7 +632,7 @@ def editBook():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -518,7 +648,7 @@ def editBook():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=6, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=5)
 
@@ -606,20 +736,43 @@ def editBook():
     modBookPriceE.grid(row=10, column=1, padx=10, pady=10)
     Button(modBookF, text="Modify", command=modBook, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=10, column=5, padx=20, pady=10)
     Button(modBookF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=6, sticky=(E), padx=15, pady=10)
-
+    
     root.mainloop()
 
 def editMember():
     def addMember():
+        membername = addMemberFNameE.get() + " " + addMemberLNameE.get()
+        mycursor = mycon.cursor()
+        mycursor.execute(f"UPDATE TABLE customers SET member = 'y' WHERE name LIKE '{membername}' AND contact LIKE '{addMemberContactE.get()}'" )
+        mycon.commit()
+        mycursor.execute(f"SELECT custid FROM CUSTOMERS WHERE name Like'{membername}' AND contact LIKE'{addMemberContactE.get()}'")
+        customerid  = mycursor.fetchone()
+        global displayMemberID 
+        displayMemberID = customerid[0]
         # clear all entries after adding
+        addMemberFNameE.delete(0, END)
+        addMemberLNameE.delete(0, END)
+        addMemberContactE.delete(0, END)
         return
 
     def modMember():
+        membername =  modMemberFNameE.get() + " " + modMemberLNameE.get()
+        mycursor=mycon.cursor()
+        mycursor.execute(f"UPDATE customers SET name = '{membername}', contact = '{modMemberContactE.get()}' WHERE custid = '{int(modMemberIDE.get())}'")
+        mycon.commit()
         # clear all entries after modifying
+        modMemberContactE.delete(0, END)
+        modMemberFNameE.delete(0, END)
+        modMemberLNameE.delete(0, END)
+        modMemberIDE.delete(0, END)
         return
 
     def delMember():
+        mycursor = mycon.cursor()
+        mycursor.execute(f"UPDATE customers SET member = 'n' WHERE  custid = {delMemberIDE.get()}")
+        mycon.commit()
         # clear all entries after removing
+        delMemberIDE.delete(0, END)
         return
 
     global root
@@ -627,7 +780,7 @@ def editMember():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -643,7 +796,7 @@ def editMember():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=4, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 12), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=3)
 
@@ -656,10 +809,6 @@ def editMember():
     memberNBK.add(delMemberF, text='Remove Member', padding=47)
     memberNBK.grid(row=2, column=0, columnspan=4, sticky=(W))
 
-    addMemberID = StringVar()
-    Label(addMemberF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
-    addMemberIDE = Entry(addMemberF, textvariable=addMemberID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addMemberIDE.grid(row=3, column=1, padx=10, pady=10)    
     addMemberFName = StringVar()
     Label(addMemberF, text="First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
     addMemberFNameE = Entry(addMemberF, textvariable=addMemberFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
@@ -674,6 +823,7 @@ def editMember():
     addMemberContactE.grid(row=6, column=1, padx=10, pady=10)
     Button(addMemberF, text="Add", command=addMember, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=7, column=2, padx=20, pady=20)
     Button(addMemberF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=8, column=2, sticky=(E), padx=15, pady=10)
+    Label(addMemberF, text=displayMemberID, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
 
     modMemberID = StringVar()
     Label(modMemberF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
@@ -710,7 +860,7 @@ def asCustomer():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -722,7 +872,7 @@ def asCustomer():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=2)
 
     Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=1, column=0, pady=15, columnspan=2)
@@ -764,7 +914,7 @@ def homeMember():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -776,7 +926,7 @@ def homeMember():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=2, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=1, sticky=(E), padx=45)
 
@@ -811,7 +961,7 @@ def homeGuest():
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
-    root.iconbitmap(r"images\bms.ico")
+    root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
     root.attributes("-alpha", 0.95)
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
@@ -823,7 +973,7 @@ def homeGuest():
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
+    titleImg = PhotoImage(file = r"desktop/titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=2, rowspan=2)
     Button(mainframe, text = "LOGOUT", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), relief = "flat", cursor="hand2", command = loggedOut).grid(row=1, column=1, sticky=(E), padx=45)
 
@@ -852,7 +1002,7 @@ def homeGuest():
 root = Tk()
 root.title("Bookstore Management System")
 root.geometry('960x540')
-root.iconbitmap(r"images\bms.ico")
+root.iconbitmap(r"/Users/arpanbiswas/Desktop/bms.ico")
 root.attributes("-alpha", 0.95)
 root.wm_protocol("WM_DELETE_WINDOW", goodBye)
 root.resizable(FALSE,FALSE)
@@ -862,9 +1012,9 @@ sty.configure("Bookstore.TFrame", background="#FFFFFF", borderwidth=5, relief=FL
 mainframe = ttk.Frame(root, style="Bookstore.TFrame")
 mainframe.grid(column=0, row=0)
 
-bgtitle = PhotoImage(file=r"images\welcometitle.png")
+bgtitle = PhotoImage(file=r"/Users/arpanbiswas/Desktop/titlestrip.png")
 Label(mainframe, image = bgtitle, bg="#FFFFFF").grid(row=0, column=0, columnspan=8)
-bgimage = PhotoImage(file=r"images\welcomecloud.png")
+bgimage = PhotoImage(file=r"/Users/arpanbiswas/Desktop/welcomecloud.png")
 Label(mainframe, image = bgimage, bg="#FFFFFF").grid(row=0, column=8, rowspan=6)
 
 Label(mainframe, text = "Login As", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e2e2e").grid(row=1, column=0, sticky=(W), padx = 15)
