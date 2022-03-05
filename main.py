@@ -33,13 +33,6 @@ def memberLogin(event=None):
             mode = "memb"
             homeMember()
 
-def searchBox(evt):
-    # clear search category list?
-    searchCtg.selection_clear()
-    searchCtg.current()
-    searchCtg.get()
-
-
 def welcomePage():
     # root definitions and configuration.
     global root
@@ -126,6 +119,55 @@ def asAdmin():
     root.mainloop()
 
 def homeAdmin():
+    # search results
+    results = []
+
+    def searchBox(evt):
+        # todo: search result box.
+        # removes results from previous search.
+        for result in results:
+            result.destroy()
+        
+        Label(mainframe, text = "Book ID       Book Name       Author        Genre       Price", bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=5, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+
+        # get current category and search box entry.
+        data = [(0,)]
+        searchCtg.selection_clear()
+        if searchCtg.current() == 0:
+            pass
+        elif searchCtg.current() == 1:
+            ctg = "name"
+        elif searchCtg.current() == 2:
+            ctg = "author"
+        elif searchCtg.current() == 3:
+            ctg = "genre"
+        elif searchCtg.current() == 4:
+            ctg = "publisher"
+        se = searchEntry.get()
+
+        # retrieve data and display it.
+        mycursor = mycon.cursor()
+        mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
+        data = mycursor.fetchmany(4)
+
+        rown = 6
+
+        if len(data) == 0:
+            empty = Label(mainframe, text = "No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+            empty.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+            results.append(empty)
+            rown = rown + 1
+        
+        for record in data:
+            rec = Label(mainframe, text = record, bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+            rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+            results.append(rec)
+            rown = rown + 1
+
+        goback = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asAdmin)
+        goback.grid(row=rown, column=4, sticky=(E), padx=28, pady=10)
+        results.append(goback)
+
     
     # root definition and configuration.
     global root
@@ -162,10 +204,10 @@ def homeAdmin():
     global searchCtg
     searchVar = StringVar()
     searchCtg = ttk.Combobox(mainframe, textvariable = searchVar, font=("Berlin Sans FB", 16), width=9, foreground="#2e2e2e", background="#FFFFFF")
-    searchCtg['values'] = (' Search By', ' Book Name', ' Author', ' Genre', 'Publisher')
+    searchCtg['values'] = (' Search By', ' Book Name', ' Author', ' Genre', ' Publisher')
     searchCtg.current(0)
     searchCtg.state(["readonly"])
-    searchCtg.bind('<<ComboboxSelected>>', searchBox)
+    # searchCtg.bind('<<ComboboxSelected>>', searchBox)
     mainframe.option_add('*TCombobox*Listbox.font', ("Berlin Sans FB", 16))
     searchCtg.grid(row=3, column=0, ipadx=4, ipady=3, pady=14)
 
@@ -174,13 +216,15 @@ def homeAdmin():
     searchEntry = Entry(mainframe, width=54, font=("Berlin Sans FB", 16), textvariable=search, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
     searchEntry.insert(0, " Enter Search Query")
     searchEntry.grid(row=3, column=1, columnspan=4, ipadx=5, ipady=5, padx=10, pady=14)
-    clicked = searchEntry.bind('<Button-1>', clearEntry)
 
-    #todo: search result box.
+    root.bind("<Return>", searchBox)
+    clicked = searchEntry.bind('<Button-1>', clearEntry)
 
     # clear button and go back button.
     Button(mainframe, text = "Clear", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = lambda: searchEntry.delete(0, END)).grid(row=4, column=4, sticky=(E), padx=28)
-    Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asAdmin).grid(row=5, column=4, sticky=(E), padx=28, pady=10)
+    gbk = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asAdmin)
+    gbk.grid(row=5, column=4, sticky=(E), padx=28, pady=10)
+    results.append(gbk)
 
     root.mainloop()
 
@@ -243,6 +287,56 @@ def asCustomer():
 
 def homeMember():
 
+    # search results
+    results = []
+
+    def searchBox(evt):
+        # todo: search result box.
+        # removes results from previous search.
+        for result in results:
+            result.destroy()
+        
+        Label(mainframe, text = "Book ID       Book Name       Author        Genre       Price", bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+
+        # get current category and search box entry.
+        data = [(0,)]
+        searchCtg.selection_clear()
+        if searchCtg.current() == 0:
+            pass
+        elif searchCtg.current() == 1:
+            ctg = "name"
+        elif searchCtg.current() == 2:
+            ctg = "author"
+        elif searchCtg.current() == 3:
+            ctg = "genre"
+        elif searchCtg.current() == 4:
+            ctg = "publisher"
+        se = searchEntry.get()
+
+        # retrieve data and display it.
+        mycursor = mycon.cursor()
+        mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
+        data = mycursor.fetchmany(4)
+
+        rown = 5
+
+        if len(data) == 0:
+            empty = Label(mainframe, text = "No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+            empty.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+            results.append(empty)
+            rown = rown + 1
+        
+        for record in data:
+            rec = Label(mainframe, text = record, bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+            rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+            results.append(rec)
+            rown = rown + 1
+
+        
+        goback = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer)
+        goback.grid(row=rown, column=1, sticky=(E), padx=28, pady=10)
+        results.append(goback)
+
     # root definition and configuration.
     global root
     root.destroy()
@@ -274,10 +368,10 @@ def homeMember():
     global searchCtg
     searchVar = StringVar()
     searchCtg = ttk.Combobox(mainframe, textvariable = searchVar, font=("Berlin Sans FB", 16), width=12, foreground="#2e2e2e", background="#FFFFFF")
-    searchCtg['values'] = (' Search By', ' Book Name', ' Author', ' Genre')
+    searchCtg['values'] = (' Search By', ' Book Name', ' Author', ' Genre', ' Publisher')
     searchCtg.current(0)
     searchCtg.state(["readonly"])
-    searchCtg.bind('<<ComboboxSelected>>', searchBox)
+    # searchCtg.bind('<<ComboboxSelected>>', searchBox)
     mainframe.option_add('*TCombobox*Listbox.font', ("Berlin Sans FB", 16))
     searchCtg.grid(row=2, column=0, ipadx=4, ipady=3)
 
@@ -286,17 +380,69 @@ def homeMember():
     searchEntry = Entry(mainframe, width=50, font=("Berlin Sans FB", 16), textvariable=search, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
     searchEntry.insert(0, " Enter Search Query")
     searchEntry.grid(row=2, column=1, ipadx=5, ipady=5, pady=10)
+
+    root.bind("<Return>", searchBox)
     clicked = searchEntry.bind('<Button-1>', clearEntry)
-    # todo: search result box.
 
     # clear and go back buttons.
     Button(mainframe, text = "Clear", width = 12, bg = "#41404A", fg = "#FFFFFF", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = lambda: searchEntry.delete(0, END)).grid(row=3, column=1, sticky=(E), padx=28)
-    Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer).grid(row=4, column=1, sticky=(E), padx=28, pady=10)
+    gbk = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer)
+    gbk.grid(row=4, column=1, sticky=(E), padx=28, pady=10)
+    results.append(gbk)
 
     root.mainloop()
 
 def homeGuest():
     
+    # search results
+    results = []
+
+    def searchBox(evt):
+        # todo: search result box.
+        # removes results from previous search.
+        for result in results:
+            result.destroy()
+        
+        Label(mainframe, text = "Book ID       Book Name       Author        Genre       Price", bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+
+        # get current category and search box entry.
+        data = [(0,)]
+        searchCtg.selection_clear()
+        if searchCtg.current() == 0:
+            pass
+        elif searchCtg.current() == 1:
+            ctg = "name"
+        elif searchCtg.current() == 2:
+            ctg = "author"
+        elif searchCtg.current() == 3:
+            ctg = "genre"
+        elif searchCtg.current() == 4:
+            ctg = "publisher"
+        se = searchEntry.get()
+
+        # retrieve data and display it.
+        mycursor = mycon.cursor()
+        mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
+        data = mycursor.fetchmany(4)
+
+        rown = 5
+
+        if len(data) == 0:
+            empty = Label(mainframe, text = "No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+            empty.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+            results.append(empty)
+            rown = rown + 1
+
+        for record in data:
+            rec = Label(mainframe, text = record, bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+            rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+            results.append(rec)
+            rown = rown + 1
+
+        goback = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer)
+        goback.grid(row=rown, column=1, sticky=(E), padx=28, pady=10)
+        results.append(goback)
+
     # root definition and configuration.
     global root
     root.destroy() 
@@ -325,10 +471,10 @@ def homeGuest():
     global searchCtg
     searchVar = StringVar()
     searchCtg = ttk.Combobox(mainframe, textvariable = searchVar, font=("Berlin Sans FB", 16), width=12, foreground="#2e2e2e", background="#FFFFFF")
-    searchCtg['values'] = (' Search By', ' Book Name', ' Author', ' Genre')
+    searchCtg['values'] = (' Search By', ' Book Name', ' Author', ' Genre', ' Publisher')
     searchCtg.current(0)
     searchCtg.state(["readonly"])
-    searchCtg.bind('<<ComboboxSelected>>', searchBox)
+    # searchCtg.bind('<<ComboboxSelected>>', searchBox)
     mainframe.option_add('*TCombobox*Listbox.font', ("Berlin Sans FB", 16))
     searchCtg.grid(row=2, column=0, ipadx=4, ipady=3)
 
@@ -337,12 +483,15 @@ def homeGuest():
     searchEntry = Entry(mainframe, width=50, font=("Berlin Sans FB", 16), textvariable=search, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
     searchEntry.insert(0, " Enter Search Query")
     searchEntry.grid(row=2, column=1, ipadx=5, ipady=5, pady=10)
+
+    root.bind("<Return>", searchBox)
     clicked = searchEntry.bind('<Button-1>', clearEntry)
-    # todo: search result box.
 
     # clear and go back buttons.
     Button(mainframe, text = "Clear", width = 15, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = lambda: searchEntry.delete(0, END)).grid(row=3, column=1, sticky=(E), padx=28)
-    Button(mainframe, text = "Go Back", pady=3, width = 15, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer).grid(row=4, column=1, sticky=(E), padx=28, pady=10)
+    gbk = Button(mainframe, text = "Go Back", pady=3, width = 15, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer)
+    gbk.grid(row=4, column=1, sticky=(E), padx=28, pady=10)
+    results.append(gbk)
 
     root.mainloop()
 
