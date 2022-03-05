@@ -1,10 +1,15 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-import mysql.connector as sqltor
+import mysql.connector
+from datetime import date
 
 mode = ""
-mycon = sqltor.connect(host = "localhost",user = "root", passwd = "ladybug04", database = "bookstore")
+mycon = mysql.connector.connect(host = "localhost",user = "root", passwd = "ladybug04", database = "bookstore")
 
+# todo: raise errors in update function: when id does not exist.
+# todo: replace bookid (in new checkout) with bookname and bookauthor. more convenient.
+# todo: replace vendor details (in new book procured) with just vendor name. more convenient. modifying vendor table can be moved to a separate function.
+# todo: automatically fill entries in update functions: user can edit them to update records.
 
 def goodBye():
     messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
@@ -28,10 +33,16 @@ def adminLogin(event=None):
 
 def memberLogin(event=None):
     global mode
-    if userE.get() == "neha":
-        if pswdE.get() == "bird":
-            mode = "memb"
-            homeMember()
+    global user
+    mycursor = mycon.cursor()
+    mycursor.execute(f"SELECT custid FROM customers WHERE name = '{userE.get()}' AND contact = '{pswdE.get()}' AND member = 'y'")
+    users = mycursor.fetchall()
+    if len(users) == 1:
+        user = users[0][0]
+        mode = "memb"
+        homeMember()
+    elif len(users) == 0:
+        messagebox.showerror("Bookstore Manager","Please enter valid name and contact.")
 
 def welcomePage():
     # root definitions and configuration.
@@ -123,7 +134,6 @@ def homeAdmin():
     results = []
 
     def searchBox(evt):
-        # todo: search result box.
         # removes results from previous search.
         for result in results:
             result.destroy()
@@ -204,7 +214,7 @@ def homeAdmin():
     Button(mainframe, text = "Book Procured", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = bookProcured).grid(row=2, column=0, pady=10)
     Button(mainframe, text = "Reserve Book", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = bookReserved).grid(row=2, column=1, pady=10)
     Button(mainframe, text = "Check Out", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = CheckOut).grid(row=2, column=2, pady=10)
-    Button(mainframe, text = "Edit Books", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = editBook).grid(row=2, column=3, pady=10)
+    Button(mainframe, text = "Book Details", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = bookDetails).grid(row=2, column=3, pady=10)
     Button(mainframe, text = "Edit Members", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = editMember).grid(row=2, column=4, pady=10)
 
     # search category combobox. choose category to search in.
@@ -260,13 +270,13 @@ def asCustomer():
     # background image.
     titleImg = PhotoImage(file = r"images\titlestrip.png").subsample(2,2)
     Label(mainframe, image = titleImg, bg="#FFFFFF").grid(row=0, column=0, columnspan=2)
-    Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=1, column=0, pady=15, columnspan=2)
+    Label(mainframe, text = "MEMBER LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=1, column=0, pady=15, columnspan=2)
 
     # username entry widget.
     global userE
     userV = StringVar()
     userE = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=userV, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
-    userE.insert(0, " Enter Username")
+    userE.insert(0, " Enter Name")
     userE.grid(row=2, column=0, ipady=10, pady=10, columnspan=2)
     # clear default text when entry widget is clicked.
     clicked = userE.bind('<Button-1>', clearEntry)
@@ -275,7 +285,7 @@ def asCustomer():
     global pswdE
     pswdV = StringVar()
     pswdE = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=pswdV, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
-    pswdE.insert(0, " Enter Password")
+    pswdE.insert(0, " Enter Contact Number")
     pswdE.grid(row=3, column=0, ipady=10, pady=10, columnspan=2)
     # clear default text when entry widget is clicked.
     clicked = pswdE.bind('<Button-1>', clearEntry)
@@ -298,7 +308,6 @@ def homeMember():
     results = []
 
     def searchBox(evt):
-        # todo: search result box.
         # removes results from previous search.
         for result in results:
             result.destroy()
@@ -411,7 +420,6 @@ def homeGuest():
     results = []
 
     def searchBox(evt):
-        # todo: search result box.
         # removes results from previous search.
         for result in results:
             result.destroy()
@@ -527,7 +535,6 @@ def bookProcured():
 
         # adding records to "fromven" table.
         mycursor = mycon.cursor()
-        messagebox.showinfo("entered")
         mycursor.execute(f"INSERT INTO fromven(vendid,bookid,copies,cost) VALUES ({int(addSuppIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{Atotal})")
         mycon.commit()
         # mycursor.execute(f"INSERT INTO vendors(vendid,name,contact) VALUES ({int(addSuppIDE.get())},'{addSuppNameE.get()}','{addContactE.get()}') ON DUPLICATE KEY UPDATE")
@@ -540,6 +547,14 @@ def bookProcured():
         addSuppNameE.delete(0, END)
         addCopiesE.delete(0, END)
         addSuppIDE.delete(0, END)
+
+        tid.destroy()
+        mycursor = mycon.cursor()
+        mycursor.execute("SELECT transid FROM fromven ORDER BY transid DESC LIMIT 1")
+        transid = mycursor.fetchone()
+        transactionid = transid[0]+1
+        trid = Label(addTransF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+        trid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
         return
 
     def modTrans():
@@ -623,7 +638,8 @@ def bookProcured():
     mycursor.execute("SELECT transid FROM fromven ORDER BY transid DESC LIMIT 1")
     transid = mycursor.fetchone()
     transactionid = transid[0]+1
-    Label(addTransF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(E), padx=10, pady=10)
+    tid = Label(addTransF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+    tid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
     # labels and entry widgets for transaction details.
     addSuppID = StringVar()
     Label(addTransF, text="Supplier ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
@@ -652,7 +668,6 @@ def bookProcured():
     Label(addTransF, text="Total Cost:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=0, sticky=(E), padx=10, pady=10)
     # add and go back button.
     Button(addTransF, text="Add", command=addTrans, width=17, cursor="hand2", font = ("Berlin Sans FB", 12)).grid(row=10, column=4, padx=20, pady=10)
-    root.bind("<Return>", addTrans)
     Button(addTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=5, sticky=(E), padx=15, pady=10)
 
 
@@ -689,7 +704,6 @@ def bookProcured():
     Label(modTransF, text="Total Cost:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=0, sticky=(E), padx=10, pady=10)
     # modify and go back button.
     Button(modTransF, text="Modify", command=modTrans, width=17, cursor="hand2", font = ("Berlin Sans FB", 12)).grid(row=10, column=4, padx=20, pady=10)
-    root.bind("<Return>", modTrans)
     Button(modTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=5, sticky=(E), padx=15, pady=10)
 
     # remove transaction frame.
@@ -699,7 +713,6 @@ def bookProcured():
     delTransIDE.grid(row=3, column=1, padx=10, pady=10, columnspan=3)
     # remove and go back button.
     Button(delTransF, text="Remove", command=delTrans, width=17, cursor="hand2", font = ("Berlin Sans FB", 12)).grid(row=4, column=4, padx=20, pady=40)
-    root.bind("<Return>", delTrans)
     Button(delTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=4, column=5, sticky=(E), padx=15, pady=10)
 
     root.mainloop()
@@ -709,20 +722,20 @@ def bookReserved():
         # add button clicked.
         # adding record to "reserved" table.
         mycursor = mycon.cursor()
-        mycursor.execute(f"INSERT INTO reserved(custid, bookid, copies, date, fulfilled) VALUES ({int(addCustIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{addDateE.get()},{addFulfilledE.get()})")
-        mycon.commit()
-
-        #mycursor.execute(f"SELECT resid FROM reserved WHERE custid = {int(addCustIDE.get())} AND bookid = {(int(addBookIDE.get()))}")
-        #resid  = mycursor.fetchone()
-        #reserveID = resid[0]
-        #create message box to display reserveID to screen.
+        # mycursor.execute(f"INSERT INTO reserved(custid, bookid, copies, date, fulfilled) VALUES ({int(addCustIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},{addDateE.get()},{addFulfilledE.get()})")
+        if mode == "memb":
+            mycursor.execute(f"INSERT INTO reserved(custid, bookid, copies, date) VALUES ({int(user)},{int(addBookIDE.get())},{int(addCopiesE.get())},'{str(date.today())}')")
+            mycon.commit()
+        elif mode == "admin":
+            mycursor.execute(f"INSERT INTO reserved(custid, bookid, copies, date) VALUES ({int(addCustIDE.get())},{int(addBookIDE.get())},{int(addCopiesE.get())},'{str(date.today())}')")
+            mycon.commit()
+            addCustIDE.delete(0, END)
 
         # clear all entries after adding
         addBookIDE.delete(0, END)
-        addCustIDE.delete(0, END)
         addCopiesE.delete(0, END)
-        addDateE.delete(0, END)
-        addFulfilledE.delete(0, END)
+        # addDateE.delete(0, END)
+        # addFulfilledE.delete(0, END)
 
         return
 
@@ -730,7 +743,7 @@ def bookReserved():
         # modify button clicked.
         # updating record in "reserved" table.
         mycursor  = mycon.cursor()
-        mycursor.execute(f"UPDATE reserved SET custid = {int(modCustIDE.get())}, bookid = {int(modBookIDE.get())}, {int(modCopiesE.get())},{modDateE.get()},{modFulfilledE.get()} WHERE resid = {int(modResIDE.get())}")
+        mycursor.execute(f"UPDATE reserved SET custid = {int(modCustIDE.get())}, bookid = {int(modBookIDE.get())}, copies = {int(modCopiesE.get())}, date = '{modDateE.get()}', fulfilled = '{modFulfilledE.get()}' WHERE resid = {int(modResIDE.get())}")
         mycon.commit()
 
         # clear all entries after modifying
@@ -797,12 +810,16 @@ def bookReserved():
     mycursor.execute("SELECT resid FROM reserved ORDER BY resid DESC LIMIT 1")
     resid = mycursor.fetchone()
     reservationid = resid[0]+1
-    Label(addResF, text=reservationid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(E), padx=10, pady=10)
+    Label(addResF, text=reservationid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(W), padx=10, pady=10)
     # labels and entry widgets for reservation details.
     addCustID = StringVar()
     Label(addResF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
-    addCustIDE = Entry(addResF, textvariable=addCustID, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addCustIDE.grid(row=4, column=1, padx=10, pady=10)
+    if mode == "memb":
+        # user id automatically displayed for members.
+        Label(addResF, text=user, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=1, sticky=(W), padx=10, pady=10)
+    elif mode == "admin":
+        addCustIDE = Entry(addResF, textvariable=addCustID, width=40, font = ("Berlin Sans FB", 12), bd=2)
+        addCustIDE.grid(row=4, column=1, padx=10, pady=10)
     addBookID = StringVar()
     Label(addResF, text="Book IDs:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
     addBookIDE = Entry(addResF, textvariable=addBookID, width=40, font = ("Berlin Sans FB", 12), bd=2)
@@ -811,22 +828,23 @@ def bookReserved():
     Label(addResF, text="Copies:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=6, column=0, sticky=(E), padx=10, pady=10)
     addCopiesE = Entry(addResF, textvariable=addCopies, width=40, font = ("Berlin Sans FB", 12), bd=2)
     addCopiesE.grid(row=6, column=1, padx=10, pady=10)
-    addDate = StringVar()
+    # addDate = StringVar()
     Label(addResF, text="Date:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=7, column=0, sticky=(E), padx=10, pady=10)
-    addDateE = Entry(addResF, textvariable=addDate, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addDateE.grid(row=7, column=1, padx=10, pady=10)
-    addFulfilled = StringVar()
-    Label(addResF, text="Fulfilled(y/n):", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=8, column=0, sticky=(E), padx=10, pady=10)
-    addFulfilledE = Entry(addResF, textvariable=addFulfilled, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addFulfilledE.grid(row=8, column=1, padx=10, pady=10)
+    Label(addResF, text = str(date.today()), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=7, column=1, sticky=(W), padx=10, pady=10)
+    # addDateE = Entry(addResF, textvariable=addDate, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    # addDateE.grid(row=7, column=1, padx=10, pady=10)
+    # new reservations would anyways be unfulfilled?
+    # addFulfilled = StringVar()
+    # Label(addResF, text="Fulfilled(y/n):", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=8, column=0, sticky=(E), padx=10, pady=10)
+    # addFulfilledE = Entry(addResF, textvariable=addFulfilled, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    # addFulfilledE.grid(row=8, column=1, padx=10, pady=10)
     # add button.
     Button(addResF, text="Add", command=addRes, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=9, column=2, padx=20, pady=40)
-    root.bind("<Return>", addRes)
     # go back button.
     if mode == "admin":
-        Button(addResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=3, sticky=(E), padx=5, pady=10)
+        Button(addResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=9, column=3, sticky=(E), padx=5, pady=10)
     elif mode == "memb":
-        Button(addResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeMember).grid(row=10, column=3, sticky=(E), padx=5, pady=10)
+        Button(addResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeMember).grid(row=9, column=3, sticky=(E), padx=5, pady=10)
 
     # modify reservation frame.
     # labels and entry widgets for reservation details.
@@ -855,13 +873,12 @@ def bookReserved():
     modFulfilledE = Entry(modResF, textvariable=modFulfilled, width=40, font = ("Berlin Sans FB", 12), bd=2)
     modFulfilledE.grid(row=8, column=1, padx=10, pady=10)
     # modify button.
-    Button(modResF, text="Modify", command=modRes, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=9, column=2, padx=20, pady=40)
-    root.bind("<Return>", modRes)
+    Button(modResF, text="Modify", command=modRes, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=9, column=2, padx=20, pady=10)
     # go back button.
     if mode == "admin":
-        Button(modResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=3, sticky=(E), padx=5, pady=10)
+        Button(modResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=9, column=3, sticky=(E), padx=5, pady=10)
     elif mode == "memb":
-        Button(modResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeMember).grid(row=10, column=3, sticky=(E), padx=5, pady=10)
+        Button(modResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeMember).grid(row=9, column=3, sticky=(E), padx=5, pady=10)
     
     # delete transaction frame.
     delResID = StringVar()
@@ -870,7 +887,6 @@ def bookReserved():
     delResIDE.grid(row=3, column=1, padx=10, pady=10)
     # remove button.
     Button(delResF, text="Remove", command=delRes, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=4, column=2, padx=20, pady=40)
-    root.bind("<Return>", delRes)
     # go back button.
     if mode == "admin":
         Button(delResF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=4, column=3, sticky=(E), padx=5, pady=10)
@@ -882,7 +898,7 @@ def bookReserved():
 def CheckOut():
     def addTrans():
         # check if customer already exists in "customers" table.
-        name = addCustFnameE.get() + " " + addCustFnameE.get()
+        name = addCustFNameE.get() + " " + addCustLNameE.get()
         mycursor  =  mycon.cursor()
         mycursor.execute(f"SELECT custid FROM customers WHERE name = '{name}' AND contact = '{addContactE.get()}'")
         custid = mycursor.fetchone()
@@ -914,10 +930,10 @@ def CheckOut():
         total = totalnodiscount - (discount)*totalnodiscount
         
         # displays bill details.
-        messagebox.showinfo("Bookstore Manager", f"Total Cost: {totalnodiscount} \nDiscount: {discount*100}% \nAmount Payable: {total}")
+        messagebox.showinfo("Bookstore Manager", f"Total Cost    : ₹{totalnodiscount} \nDiscount      : {discount*100}% \nAmount Payable: ₹{total}")
 
         # create new transaction in "checkout" table.
-        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES ({customerid}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {total}, 0)")
+        mycursor.execute(f"INSERT INTO checkout(custid,bookid,copies,price,discounted) VALUES ({customerid}, {int(addBookIDE.get())}, {int(addCopiesE.get())}, {totalnodiscount}, {total})")
         mycon.commit()
 
         # update copies available in "books" table.
@@ -931,7 +947,7 @@ def CheckOut():
         addBookIDE.delete(0, END)
         addContactE.delete(0, END)
         addCopiesE.delete(0, END)
-        addCustFnameE.delete(0, END)
+        addCustFNameE.delete(0, END)
         addCustLNameE.delete(0, END)
         addNorUE.delete(0, END)
         return
@@ -972,11 +988,19 @@ def CheckOut():
     checkOutNBK.add(addTransF, text='New Check Out')
     checkOutNBK.grid(row=2, column=0, columnspan=4, sticky=(W))
 
+    # add transaction frame.
+    # transaction id is auto incremented.
+    Label(addTransF, text="Transaction ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
+    mycursor = mycon.cursor()
+    mycursor.execute("SELECT transid FROM checkout ORDER BY transid DESC LIMIT 1")
+    transid = mycursor.fetchone()
+    transactionid = transid[0]+1
+    Label(addTransF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(W), padx=10, pady=10)
     # labels and entries for checkout details.
     addCustFName = StringVar()
     Label(addTransF, text="Customer First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
-    addCustFnameE = Entry(addTransF, textvariable=addCustFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
-    addCustFnameE.grid(row=5, column=1, padx=10, pady=10)
+    addCustFNameE = Entry(addTransF, textvariable=addCustFName, width=40, font = ("Berlin Sans FB", 12), bd=2)
+    addCustFNameE.grid(row=5, column=1, padx=10, pady=10)
     addCustLName = StringVar()
     Label(addTransF, text="Customer Last Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=6, column=0, sticky=(E), padx=10, pady=10)
     addCustLNameE = Entry(addTransF, textvariable=addCustLName, width=40, font = ("Berlin Sans FB", 12), bd=2)
@@ -999,24 +1023,18 @@ def CheckOut():
     addNorUE.grid(row=10, column=1, padx=10, pady=10)
 
     # add and go back button.
-    Button(addTransF, text="Add", command=addTrans, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=11, column=2, padx=20, pady=40)
-    root.bind("<Return>", addTrans)
+    Button(addTransF, text="Add", command=addTrans, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=11, column=2, padx=20, pady=30)
     Button(addTransF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=11, column=3, sticky=(E), padx=15, pady=10)
 
     root.mainloop()
 
-def editBook():
+def bookDetails():
     def addBook():
         # add button clicked.
         # create new record in "books" table.
         mycursor =  mycon.cursor()
         mycursor.execute(f"INSERT INTO books(name,author,genre,publisher,yop,price,new,used) VALUES ('{addBookNameE.get()}','{addBookAuthE.get()}','{addBookGenreE.get()}','{addBookPubE.get()}','{addBookYoPE.get()}',{float(addBookPriceE.get())},{int(addBookNewE.get())},{int(addBookSecE.get())})")
         mycon.commit()
-
-        # mycursor.execute(f"SELECT bookid FROM books WHERE (name = {addBookNameE.get()} AND author = {addBookAuthE.get()}) AND year = {addBookYoPE.get()}")
-        # book = mycursor.fetchone()
-        # bookid = book[0]
-        # make message box to display bookid. 
 
         # clear all entries after adding
         addBookAuthE.delete(0, END)
@@ -1087,7 +1105,13 @@ def editBook():
     BookNBK.grid(row=2, column=0, columnspan=6, sticky=(W))
 
     # add book frame.
-    # todo: display book id.
+    # book id is auto incremented.
+    Label(addBookF, text="Book ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=0, sticky=(E), padx=10, pady=10)
+    mycursor = mycon.cursor()
+    mycursor.execute("SELECT bookid FROM books ORDER BY bookid DESC LIMIT 1")
+    bookid = mycursor.fetchone()
+    bid = bookid[0]+1
+    Label(addBookF, text=bid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(W), padx=10, pady=10)
     # labels and entry widgets for book details.
     addBookName = StringVar()
     Label(addBookF, text="Book Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
@@ -1123,7 +1147,6 @@ def editBook():
     addBookPriceE.grid(row=10, column=1, padx=10, pady=10)
     # add button and go back button.
     Button(addBookF, text="Add", command=addBook, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=10, column=5, padx=20, pady=10)
-    root.bind("<Return>", addBook)
     Button(addBookF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=6, sticky=(E), padx=15, pady=10)
 
     # modify book frame.
@@ -1166,7 +1189,6 @@ def editBook():
     modBookPriceE.grid(row=10, column=1, padx=10, pady=10)
     # modify and go back button.
     Button(modBookF, text="Modify", command=modBook, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=10, column=5, padx=20, pady=10)
-    root.bind("<Return>", modBook)
     Button(modBookF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=10, column=6, sticky=(E), padx=15, pady=10)
     
     root.mainloop()
@@ -1182,7 +1204,7 @@ def editMember():
         mycon.commit()
 
         # display member id.
-        mycursor.execute(f"SELECT custid FROM customers WHERE name Like'{membername}' AND contact LIKE'{addMemberContactE.get()}'")
+        mycursor.execute(f"SELECT custid FROM customers WHERE name LIKE '{membername}' AND contact LIKE '{addMemberContactE.get()}'")
         customerid  = mycursor.fetchone()
         displayMemberID = 0 
         displayMemberID = customerid[0]
@@ -1198,8 +1220,9 @@ def editMember():
         # modify button clicked.
         # update record in "customers" table.
         membername =  modMemberFNameE.get() + " " + modMemberLNameE.get()
+
         mycursor=mycon.cursor()
-        mycursor.execute(f"UPDATE customers SET name = '{membername}', contact = '{modMemberContactE.get()}' WHERE custid = '{int(modMemberIDE.get())}'")
+        mycursor.execute(f"UPDATE customers SET name = '{membername}', contact = '{modMemberContactE.get()}' WHERE custid = {int(modMemberIDE.get())}")
         mycon.commit()
 
         # clear all entries after modifying
@@ -1275,7 +1298,6 @@ def editMember():
     addMemberContactE.grid(row=6, column=1, padx=10, pady=10)
     # add and go back button.
     Button(addMemberF, text="Add", command=addMember, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=7, column=2, padx=20, pady=20)
-    root.bind("<Return>", addMember)
     Button(addMemberF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=8, column=2, sticky=(E), padx=15, pady=10)
 
     # modify member frame.
@@ -1297,7 +1319,6 @@ def editMember():
     modMemberContactE.grid(row=6, column=1, padx=10, pady=10)
     # modify and go back button.
     Button(modMemberF, text="Modify", command=modMember, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=7, column=2, padx=20, pady=20)
-    root.bind("<Return>", modMember)
     Button(modMemberF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=8, column=2, sticky=(E), padx=15, pady=10)
 
     # delete member frame.
@@ -1307,7 +1328,6 @@ def editMember():
     delMemberIDE.grid(row=3, column=1, padx=10, pady=10)
     # remove and go back button.
     Button(delMemberF, text="Remove", command=delMember, cursor="hand2", width=17, font = ("Berlin Sans FB", 12)).grid(row=4, column=2, padx=20, pady=20)
-    root.bind("<Return>", delMember)
     Button(delMemberF, text = "Go Back", width = 10, pady=2, font = ("Berlin Sans FB", 12), cursor="hand2", command=homeAdmin).grid(row=5, column=2, sticky=(E), padx=15, pady=10)
 
     root.mainloop()
@@ -1341,3 +1361,4 @@ Button(mainframe, text = "Admin", width = 20, bg="#2e2e2e", fg="#FFFFFF", font =
 Button(mainframe, text = "Customer", width = 20, bg="#2e2e2e", fg="#FFFFFF", font = ("Berlin Sans FB", 10), bd=2, cursor="hand2", relief=GROOVE, command = asCustomer).grid(row=3, column=0, pady = 5)
 
 root.mainloop()
+mycon.close()
