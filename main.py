@@ -128,10 +128,13 @@ def homeAdmin():
         for result in results:
             result.destroy()
         
-        Label(mainframe, text = "Book ID       Book Name       Author        Genre       Price", bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=5, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        data = []
+        columns = ('Book ID', 'Book Name', 'Author', 'Genre', 'Price')
+        # coltxt = "{: <15} {: <40} {: <40} {: <30} {: <15}".format(*columns)
+        # Label(mainframe, text = coltxt, bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=5, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        data.append(columns)
 
         # get current category and search box entry.
-        data = [(0,)]
         searchCtg.selection_clear()
         if searchCtg.current() == 0:
             pass
@@ -148,21 +151,25 @@ def homeAdmin():
         # retrieve data and display it.
         mycursor = mycon.cursor()
         mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
-        data = mycursor.fetchmany(4)
+        data.extend(mycursor.fetchmany(8))
 
-        rown = 6
+        # rown = 6
+        rown = 5
 
-        if len(data) == 0:
-            empty = Label(mainframe, text = "No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+        if len(data) == 1:
+            empty = Label(mainframe, text = "   No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
             empty.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
             results.append(empty)
             rown = rown + 1
-        
-        for record in data:
-            rec = Label(mainframe, text = record, bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
-            rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
-            results.append(rec)
-            rown = rown + 1
+
+        else:
+            for record in data:
+                txt = "{: <9} {: <24} {: <24} {: <18} {: <14}".format(*record)
+                # string formatting of this type requires monospaced fonts to print properly.
+                rec = Label(mainframe, text = txt, bg = "#FFFFFF", font = ("Courier", 12))
+                rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+                results.append(rec)
+                rown = rown + 1
 
         goback = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asAdmin)
         goback.grid(row=rown, column=4, sticky=(E), padx=28, pady=10)
@@ -296,10 +303,13 @@ def homeMember():
         for result in results:
             result.destroy()
         
-        Label(mainframe, text = "Book ID       Book Name       Author        Genre       Price", bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        data = []
+        columns = ('Book ID', 'Book Name', 'Author', 'Genre', 'Price')
+        # coltxt = "{: <15} {: <40} {: <40} {: <30} {: <15}".format(*columns)
+        # Label(mainframe, text = coltxt, bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        data.append(columns)
 
         # get current category and search box entry.
-        data = [(0,)]
         searchCtg.selection_clear()
         if searchCtg.current() == 0:
             pass
@@ -316,22 +326,25 @@ def homeMember():
         # retrieve data and display it.
         mycursor = mycon.cursor()
         mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
-        data = mycursor.fetchmany(4)
+        data.extend(mycursor.fetchmany(8))
 
-        rown = 5
+        # rown = 5
+        rown = 4
 
-        if len(data) == 0:
-            empty = Label(mainframe, text = "No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+        if len(data) == 1:
+            empty = Label(mainframe, text = "   No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
             empty.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
             results.append(empty)
             rown = rown + 1
-        
-        for record in data:
-            rec = Label(mainframe, text = record, bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
-            rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
-            results.append(rec)
-            rown = rown + 1
 
+        else:
+            for record in data:
+                txt = "{: <10} {: <25} {: <25} {: <20} {: <15}".format(*record)
+                # string formatting of this type requires monospaced fonts to print properly.
+                rec = Label(mainframe, text = txt, bg = "#FFFFFF", font = ("Courier", 12))
+                rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+                results.append(rec)
+                rown = rown + 1
         
         goback = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer)
         goback.grid(row=rown, column=1, sticky=(E), padx=28, pady=10)
@@ -403,10 +416,13 @@ def homeGuest():
         for result in results:
             result.destroy()
         
-        Label(mainframe, text = "Book ID       Book Name       Author        Genre       Price", bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        data = []
+        columns = ('Book ID', 'Book Name', 'Author', 'Genre', 'Price')
+        # coltxt = "{: <15} {: <40} {: <40} {: <30} {: <15}".format(*columns)
+        # Label(mainframe, text = coltxt, bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        data.append(columns)
 
         # get current category and search box entry.
-        data = [(0,)]
         searchCtg.selection_clear()
         if searchCtg.current() == 0:
             pass
@@ -423,21 +439,25 @@ def homeGuest():
         # retrieve data and display it.
         mycursor = mycon.cursor()
         mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
-        data = mycursor.fetchmany(4)
+        data.extend(mycursor.fetchmany(8))
 
-        rown = 5
+        # rown = 5
+        rown = 4
 
-        if len(data) == 0:
-            empty = Label(mainframe, text = "No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
+        if len(data) == 1:
+            empty = Label(mainframe, text = "   No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
             empty.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
             results.append(empty)
             rown = rown + 1
 
-        for record in data:
-            rec = Label(mainframe, text = record, bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
-            rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
-            results.append(rec)
-            rown = rown + 1
+        else:
+            for record in data:
+                txt = "{: <10} {: <25} {: <25} {: <20} {: <15}".format(*record)
+                # string formatting of this type requires monospaced fonts to print properly.
+                rec = Label(mainframe, text = txt, bg = "#FFFFFF", font = ("Courier", 12))
+                rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
+                results.append(rec)
+                rown = rown + 1
 
         goback = Button(mainframe, text = "Go Back", pady=3, width = 12, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command=asCustomer)
         goback.grid(row=rown, column=1, sticky=(E), padx=28, pady=10)
