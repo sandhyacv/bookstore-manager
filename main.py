@@ -168,7 +168,8 @@ def homeAdmin():
         # retrieve data and display it.
         mycursor = mycon.cursor()
         mycursor.execute(f"SELECT bookid, name, author, genre, price, new, used FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
-        data.extend(mycursor.fetchmany(5))
+        contain = mycursor.fetchall()
+        data.extend(contain[0:5])
 
         rown = 5
 
@@ -1075,7 +1076,7 @@ def bookDetails():
         # updates book id.
         bkid.destroy()
         mycursor = mycon.cursor()
-        mycursor.execute("SELECT transid FROM checkout ORDER BY transid DESC LIMIT 1")
+        mycursor.execute("SELECT bookid FROM books ORDER BY bookid DESC LIMIT 1")
         transid = mycursor.fetchone()
         transactionid = transid[0]+1
         trid = Label(addBookF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
