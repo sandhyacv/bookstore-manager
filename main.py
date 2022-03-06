@@ -223,7 +223,7 @@ def homeAdmin():
     Button(mainframe, text = "Reserve Book", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = bookReserved).grid(row=2, column=1, pady=10)
     Button(mainframe, text = "Check Out", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = CheckOut).grid(row=2, column=2, pady=10)
     Button(mainframe, text = "Book Details", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = bookDetails).grid(row=2, column=3, pady=10)
-    Button(mainframe, text = "Edit Members", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = editMember).grid(row=2, column=4, pady=10)
+    Button(mainframe, text = "Member Details", width=14, bg="#9e9e9e", fg="#2e5170", font = ("Berlin Sans FB", 14), cursor="hand2", relief=GROOVE, command = editMember).grid(row=2, column=4, pady=10)
 
     # search category combobox. choose category to search in.
     global searchCtg
@@ -743,7 +743,7 @@ def bookReserved():
         # updates reservation id.
         rid.destroy()
         mycursor = mycon.cursor()
-        mycursor.execute("SELECT transid FROM fromven ORDER BY transid DESC LIMIT 1")
+        mycursor.execute("SELECT resid FROM reserved ORDER BY resid DESC LIMIT 1")
         transid = mycursor.fetchone()
         transactionid = transid[0]+1
         trid = Label(addResF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
