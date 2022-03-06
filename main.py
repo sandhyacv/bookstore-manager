@@ -1,41 +1,48 @@
+# tkinter installation: `pip install tk`.
 from tkinter import *
+# import themed widgets and messagebox.
 from tkinter import ttk, messagebox
-import mysql.connector
 from datetime import date
+# mysql installation: mysql.com/downloads/.
+import mysql.connector
 
+# mode holds access level of current user.
 mode = ""
+
+# mysql connection.
 mycon = mysql.connector.connect(host = "localhost",user = "root", passwd = "ladybug04", database = "bookstore")
 
-# todo: raise errors in update function: when id does not exist.
-# todo: replace bookid (in new checkout) with bookname and bookauthor. more convenient.
-# todo: replace vendor details (in new book procured) with just vendor name. more convenient. modifying vendor table can be moved to a separate function.
-# todo: automatically fill entries in update functions: user can edit them to update records.
-
 def goodBye():
+    # displays a messagebox when the window/root is closed.
     messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     root.destroy()
 
 def loggedOut():
+    # displays a messagebox when user logs out. moves user to welcome page.
     messagebox.showinfo("Bookstore Manager", "Thank You for Using BMS")
     welcomePage()
 
 def clearEntry(event):
-    # clears entry widget when clicked inside.
+    # clears text in entry widget when clicked inside.
     event.widget.configure(state=NORMAL)
     event.widget.delete(0, END)
 
 def adminLogin(event=None):
     global mode
-    if userEntry.get() == "admin":
-        if pswdEntry.get() == "123":
-            mode = "admin"
-            homeAdmin()
+    # sets access mode to admin if username and password match.
+    if userVar.get() == "admin" and pswdVar.get() == "admin@123":
+        mode = "admin"
+        homeAdmin()
+    else:
+        messagebox.showerror("Bookstore Manager", "Enter correct username/password.")
 
 def memberLogin(event=None):
+    # sets access mode to member and user id to corresponding customer id
+    # if name and contact exist in members.
     global mode
     global user
     mycursor = mycon.cursor()
-    mycursor.execute(f"SELECT custid FROM customers WHERE name = '{userE.get()}' AND contact = '{pswdE.get()}' AND member = 'y'")
+    mycursor.execute(f"SELECT custid FROM customers WHERE name = '{userV.get()}' AND contact = '{pswdV.get()}' AND member = 'y'")
     users = mycursor.fetchall()
     if len(users) == 1:
         user = users[0][0]
@@ -45,14 +52,16 @@ def memberLogin(event=None):
         messagebox.showerror("Bookstore Manager","Please enter valid name and contact.")
 
 def welcomePage():
-    # root definitions and configuration.
+    # root definition and configuration.
     global root
     root.destroy()
     root = Tk()
     root.title("Bookstore Management System")
     root.geometry('960x540')
     root.iconbitmap(r"images\bms.ico")
+    # window transparency.
     root.attributes("-alpha", 0.95)
+    # calls goodBye() when window is closed.
     root.wm_protocol("WM_DELETE_WINDOW", goodBye)
     root.resizable(FALSE,FALSE)
 
@@ -78,8 +87,8 @@ def welcomePage():
 
 def asAdmin():
     global root
-    global userEntry
-    global pswdEntry
+    global userVar
+    global pswdVar
     global clicked
 
     # root definition and configuration.
@@ -106,17 +115,17 @@ def asAdmin():
     Label(mainframe, text = "LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=2, column=0, pady=30)
 
     # username entry widget.
-    user = StringVar()
-    userEntry = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=user, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
-    userEntry.insert(0, " Enter Username")
+    userVar = StringVar()
+    userEntry = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=userVar, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
+    userEntry.insert(0, " Enter Username and Password")
     userEntry.grid(row=4, column=0, ipady=10, pady=10)
     # remove default text when entry widget is clicked.
     clicked = userEntry.bind('<Button-1>', clearEntry)
 
     # password entry widget.
-    pswd = StringVar()
-    pswdEntry = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=pswd, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
-    pswdEntry.insert(0, " Enter Password")
+    pswdVar = StringVar()
+    pswdEntry = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=pswdVar, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1, show = "*")
+    pswdEntry.insert(0, " xxx")
     pswdEntry.grid(row=6, column=0, ipady=10, pady=10)
     # remove default text when entry widget is clicked.
     clicked = pswdEntry.bind('<Button-1>', clearEntry)
@@ -130,7 +139,7 @@ def asAdmin():
     root.mainloop()
 
 def homeAdmin():
-    # search results
+    # holds search results.
     results = []
 
     def searchBox(evt):
@@ -139,9 +148,7 @@ def homeAdmin():
             result.destroy()
         
         data = []
-        columns = ('Book ID', 'Book Name', 'Author', 'Genre', 'Price')
-        # coltxt = "{: <15} {: <40} {: <40} {: <30} {: <15}".format(*columns)
-        # Label(mainframe, text = coltxt, bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=5, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        columns = ('ID', 'Book Name', 'Author', 'Genre', 'Price', 'New', 'Used')
         data.append(columns)
 
         # get current category and search box entry.
@@ -160,12 +167,12 @@ def homeAdmin():
 
         # retrieve data and display it.
         mycursor = mycon.cursor()
-        mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
-        data.extend(mycursor.fetchmany(8))
+        mycursor.execute(f"SELECT bookid, name, author, genre, price, new, used FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
+        data.extend(mycursor.fetchmany(5))
 
-        # rown = 6
         rown = 5
 
+        # no results found.
         if len(data) == 1:
             empty = Label(mainframe, text = "   No Matching Records", bg = "#FFFFFF", font = ("Berlin Sans FB", 16))
             empty.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
@@ -174,8 +181,9 @@ def homeAdmin():
 
         else:
             for record in data:
-                txt = "{: <9} {: <24} {: <24} {: <18} {: <14}".format(*record)
+                # print records in columns.
                 # string formatting of this type requires monospaced fonts to print properly.
+                txt = "{: <5} {: <23} {: <23} {: <16} {: <8} {: <6} {: <6}".format(*record)
                 rec = Label(mainframe, text = txt, bg = "#FFFFFF", font = ("Courier", 12))
                 rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
                 results.append(rec)
@@ -273,19 +281,19 @@ def asCustomer():
     Label(mainframe, text = "MEMBER LOGIN", font = ("Berlin Sans FB", 24), bg="#FFFFFF", fg="#2e5170").grid(row=1, column=0, pady=15, columnspan=2)
 
     # username entry widget.
-    global userE
+    global userV
     userV = StringVar()
     userE = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=userV, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
-    userE.insert(0, " Enter Name")
+    userE.insert(0, " Enter Name and Contact Number")
     userE.grid(row=2, column=0, ipady=10, pady=10, columnspan=2)
     # clear default text when entry widget is clicked.
     clicked = userE.bind('<Button-1>', clearEntry)
 
     # password entry widget.
-    global pswdE
+    global pswdV
     pswdV = StringVar()
-    pswdE = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=pswdV, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1)
-    pswdE.insert(0, " Enter Contact Number")
+    pswdE = Entry(mainframe, width=40, font=("Berlin Sans FB", 14), textvariable=pswdV, fg="#2e2e2e", bg="#FFFFFF", borderwidth=1, show="x")
+    pswdE.insert(0, " xxxxxxxxxx")
     pswdE.grid(row=3, column=0, ipady=10, pady=10, columnspan=2)
     # clear default text when entry widget is clicked.
     clicked = pswdE.bind('<Button-1>', clearEntry)
@@ -313,9 +321,7 @@ def homeMember():
             result.destroy()
         
         data = []
-        columns = ('Book ID', 'Book Name', 'Author', 'Genre', 'Price')
-        # coltxt = "{: <15} {: <40} {: <40} {: <30} {: <15}".format(*columns)
-        # Label(mainframe, text = coltxt, bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        columns = ('ID', 'Book Name', 'Author', 'Genre', 'Price', 'New', 'Used')
         data.append(columns)
 
         # get current category and search box entry.
@@ -334,8 +340,8 @@ def homeMember():
 
         # retrieve data and display it.
         mycursor = mycon.cursor()
-        mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
-        data.extend(mycursor.fetchmany(8))
+        mycursor.execute(f"SELECT bookid, name, author, genre, price, new, used FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")        
+        data.extend(mycursor.fetchmany(5))
 
         # rown = 5
         rown = 4
@@ -348,7 +354,7 @@ def homeMember():
 
         else:
             for record in data:
-                txt = "{: <10} {: <25} {: <25} {: <20} {: <15}".format(*record)
+                txt = "{: <5} {: <23} {: <23} {: <16} {: <8} {: <6} {: <6}".format(*record)
                 # string formatting of this type requires monospaced fonts to print properly.
                 rec = Label(mainframe, text = txt, bg = "#FFFFFF", font = ("Courier", 12))
                 rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
@@ -425,9 +431,7 @@ def homeGuest():
             result.destroy()
         
         data = []
-        columns = ('Book ID', 'Book Name', 'Author', 'Genre', 'Price')
-        # coltxt = "{: <15} {: <40} {: <40} {: <30} {: <15}".format(*columns)
-        # Label(mainframe, text = coltxt, bg = "#FFFFFF", font = ("Berlin Sans FB", 16)).grid(row=4, column=0, columnspan = 5, sticky=(W), padx=10, pady=10)
+        columns = ('ID', 'Book Name', 'Author', 'Genre', 'Price', 'New', 'Used')
         data.append(columns)
 
         # get current category and search box entry.
@@ -446,8 +450,8 @@ def homeGuest():
 
         # retrieve data and display it.
         mycursor = mycon.cursor()
-        mycursor.execute(f"SELECT bookid, name, author, genre, price FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")
-        data.extend(mycursor.fetchmany(8))
+        mycursor.execute(f"SELECT bookid, name, author, genre, price, new, used FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")        
+        data.extend(mycursor.fetchmany(5))
 
         # rown = 5
         rown = 4
@@ -460,7 +464,7 @@ def homeGuest():
 
         else:
             for record in data:
-                txt = "{: <10} {: <25} {: <25} {: <20} {: <15}".format(*record)
+                txt = "{: <5} {: <23} {: <23} {: <16} {: <8} {: <6} {: <6}".format(*record)
                 # string formatting of this type requires monospaced fonts to print properly.
                 rec = Label(mainframe, text = txt, bg = "#FFFFFF", font = ("Courier", 12))
                 rec.grid(row=rown, column=0, columnspan = 5, sticky=(W), padx=10, pady=5)
@@ -530,7 +534,6 @@ def bookProcured():
 
         # bill total.
         Atotal = float(addBookPriceE.get())*int(addCopiesE.get())
-        # Label(addTransF, text="total: ", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1)
         Label(addTransF, text=str(Atotal), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1)
 
         # adding records to "fromven" table.
@@ -548,6 +551,7 @@ def bookProcured():
         addCopiesE.delete(0, END)
         addSuppIDE.delete(0, END)
 
+        # updates transaction id.
         tid.destroy()
         mycursor = mycon.cursor()
         mycursor.execute("SELECT transid FROM fromven ORDER BY transid DESC LIMIT 1")
@@ -562,8 +566,7 @@ def bookProcured():
 
         # new bill total.
         Mtotal = int(modBookPriceE.get())*int(modCopiesE.get())
-        # Label(modTransF, text="total: ", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1)
-        Label(addTransF, text=str(Mtotal), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1)
+        Label(modTransF, text=str(Mtotal), bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=9, column=1)
 
         # update records in "fromven" table.
         mycursor = mycon.cursor()
@@ -737,6 +740,15 @@ def bookReserved():
         # addDateE.delete(0, END)
         # addFulfilledE.delete(0, END)
 
+        # updates reservation id.
+        rid.destroy()
+        mycursor = mycon.cursor()
+        mycursor.execute("SELECT transid FROM fromven ORDER BY transid DESC LIMIT 1")
+        transid = mycursor.fetchone()
+        transactionid = transid[0]+1
+        trid = Label(addResF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+        trid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
+
         return
 
     def modRes():
@@ -750,6 +762,9 @@ def bookReserved():
         modResIDE.delete(0, END)
         modCustIDE.delete(0, END)
         modBookIDE.delete(0, END)
+        modCopiesE.delete(0, END)
+        modDateE.delete(0, END)
+        modFulfilledE.delete(0, END)
         return
 
     def delRes():
@@ -810,7 +825,8 @@ def bookReserved():
     mycursor.execute("SELECT resid FROM reserved ORDER BY resid DESC LIMIT 1")
     resid = mycursor.fetchone()
     reservationid = resid[0]+1
-    Label(addResF, text=reservationid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(W), padx=10, pady=10)
+    rid = Label(addResF, text=reservationid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+    rid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
     # labels and entry widgets for reservation details.
     addCustID = StringVar()
     Label(addResF, text="Customer ID:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
@@ -950,6 +966,15 @@ def CheckOut():
         addCustFNameE.delete(0, END)
         addCustLNameE.delete(0, END)
         addNorUE.delete(0, END)
+
+        # updates transaction id.
+        tid.destroy()
+        mycursor = mycon.cursor()
+        mycursor.execute("SELECT transid FROM checkout ORDER BY transid DESC LIMIT 1")
+        transid = mycursor.fetchone()
+        transactionid = transid[0]+1
+        trid = Label(addTransF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+        trid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
         return
 
     # root definition and configuration.
@@ -995,7 +1020,8 @@ def CheckOut():
     mycursor.execute("SELECT transid FROM checkout ORDER BY transid DESC LIMIT 1")
     transid = mycursor.fetchone()
     transactionid = transid[0]+1
-    Label(addTransF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(W), padx=10, pady=10)
+    tid = Label(addTransF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+    tid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
     # labels and entries for checkout details.
     addCustFName = StringVar()
     Label(addTransF, text="Customer First Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=5, column=0, sticky=(E), padx=10, pady=10)
@@ -1045,6 +1071,15 @@ def bookDetails():
         addBookPubE.delete(0, END)
         addBookSecE.delete(0, END)
         addBookYoPE.delete(0, END)
+
+        # updates book id.
+        bkid.destroy()
+        mycursor = mycon.cursor()
+        mycursor.execute("SELECT transid FROM checkout ORDER BY transid DESC LIMIT 1")
+        transid = mycursor.fetchone()
+        transactionid = transid[0]+1
+        trid = Label(addBookF, text=transactionid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+        trid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
         return
 
     def modBook():
@@ -1111,7 +1146,8 @@ def bookDetails():
     mycursor.execute("SELECT bookid FROM books ORDER BY bookid DESC LIMIT 1")
     bookid = mycursor.fetchone()
     bid = bookid[0]+1
-    Label(addBookF, text=bid, bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=3, column=1, sticky=(W), padx=10, pady=10)
+    bkid = Label(addBookF, text=bid, bg="#FFFFFF", font = ("Berlin Sans FB", 12))
+    bkid.grid(row=3, column=1, sticky=(W), padx=10, pady=10)
     # labels and entry widgets for book details.
     addBookName = StringVar()
     Label(addBookF, text="Book Name:", bg="#FFFFFF", font = ("Berlin Sans FB", 12)).grid(row=4, column=0, sticky=(E), padx=10, pady=10)
@@ -1207,6 +1243,7 @@ def editMember():
         mycursor.execute(f"SELECT custid FROM customers WHERE name LIKE '{membername}' AND contact LIKE '{addMemberContactE.get()}'")
         customerid  = mycursor.fetchone()
         displayMemberID = 0 
+        print(customerid)
         displayMemberID = customerid[0]
         messagebox.showinfo("Bookstore Manager", f"Your Member ID Is: {displayMemberID}")
 
