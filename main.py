@@ -342,7 +342,8 @@ def homeMember():
         # retrieve data and display it.
         mycursor = mycon.cursor()
         mycursor.execute(f"SELECT bookid, name, author, genre, price, new, used FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")        
-        data.extend(mycursor.fetchmany(5))
+        contain = mycursor.fetchall()
+        data.extend(contain[0:5])
 
         # rown = 5
         rown = 4
@@ -452,7 +453,8 @@ def homeGuest():
         # retrieve data and display it.
         mycursor = mycon.cursor()
         mycursor.execute(f"SELECT bookid, name, author, genre, price, new, used FROM books WHERE {ctg} LIKE '%{se}%' ORDER BY {ctg}")        
-        data.extend(mycursor.fetchmany(5))
+        contain = mycursor.fetchall()
+        data.extend(contain[0:5])
 
         # rown = 5
         rown = 4
