@@ -945,8 +945,8 @@ def CheckOut():
         else:
             discount = 0
         
-        totalnodiscount  = pricebook * int(addCopies.get())
-        total = totalnodiscount - (discount)*totalnodiscount
+        totalnodiscount  = float(pricebook) * int(addCopies.get())
+        total = totalnodiscount - (discount)*(totalnodiscount)
         
         # displays bill details.
         messagebox.showinfo("Bookstore Manager", f"Total Cost    : ₹{totalnodiscount} \nDiscount      : {discount*100}% \nAmount Payable: ₹{total}")
@@ -1246,7 +1246,6 @@ def editMember():
         mycursor.execute(f"SELECT custid FROM customers WHERE name LIKE '{membername}' AND contact LIKE '{addMemberContactE.get()}'")
         customerid  = mycursor.fetchone()
         displayMemberID = 0 
-        print(customerid)
         displayMemberID = customerid[0]
         messagebox.showinfo("Bookstore Manager", f"Your Member ID Is: {displayMemberID}")
 
